@@ -51,3 +51,15 @@ export type {
 } from './austria-special.ts';
 export { computeAustria } from './austria.ts';
 export type { AustriaOptions, AustriaResult } from './austria.ts';
+export {
+  DEFAULT_COMPARISON_OPTIONS,
+  compare,
+  compareRange,
+  conversionRate,
+} from './compare.ts';
+export type {
+  ComparisonOptions,
+  ComparisonParameters,
+  ComparisonResult,
+  TraceEntry,
+} from './compare.ts';
