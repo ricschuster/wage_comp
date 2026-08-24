@@ -21,3 +21,10 @@ export {
   eiPremium,
 } from './canada-payroll.ts';
 export type { PayrollBreakdown } from './canada-payroll.ts';
+export { computeProvincialTax, taxReductionAmount } from './canada-provincial.ts';
+export type {
+  ProvincialTaxBreakdown,
+  ProvincialTaxInput,
+} from './canada-provincial.ts';
+export { computeCanada } from './canada.ts';
+export type { CanadaParameters, CanadaResult } from './canada.ts';
