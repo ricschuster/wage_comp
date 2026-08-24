@@ -63,3 +63,5 @@ export type {
   ComparisonResult,
   TraceEntry,
 } from './compare.ts';
+export { EquivalenceError, solveEquivalentAustrianGross } from './solve.ts';
+export type { EquivalenceResult } from './solve.ts';
