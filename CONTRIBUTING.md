@@ -33,6 +33,28 @@ The workflow is:
 4. If a value cannot be verified against an authoritative source, document the
    gap rather than shipping a plausible guess.
 
+### Fetching from canada.ca
+
+CRA pages sit behind Akamai bot protection that rejects `curl` and `wget` on
+their TLS handshake, so scripted fetches fail with an HTTP/2 stream error or a
+timeout rather than a clean refusal. A normal browser works fine.
+
+If you need to script it (for the annual parameter refresh, for example), a
+client that replays a real browser TLS fingerprint gets through. For example,
+with `curl_cffi` installed:
+
+```python
+from curl_cffi import requests
+
+response = requests.get(url, impersonate='chrome', timeout=60)
+```
+
+Note also that `www.canada.ca` resolves to IPv6 first, so on a host without
+working IPv6 the connection will hang before bot protection is even reached.
+
+Austrian sources (`sozialversicherung.gv.at`, `bmf.gv.at`) and the Justice Laws
+site (`laws-lois.justice.gc.ca`) have no such restriction.
+
 ## Conventions
 
 - Conventional Commits (for example `feat: ...`, `fix: ...`, `chore: ...`,
