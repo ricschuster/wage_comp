@@ -28,3 +28,13 @@ export type {
 } from './canada-provincial.ts';
 export { computeCanada } from './canada.ts';
 export type { CanadaParameters, CanadaResult } from './canada.ts';
+export {
+  commutingCreditSupplement,
+  computeAustriaRegular,
+  regularSocialInsurance,
+  unemploymentRate,
+} from './austria-regular.ts';
+export type {
+  AustriaRegularBreakdown,
+  RegularSocialInsuranceBreakdown,
+} from './austria-regular.ts';
