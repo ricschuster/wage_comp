@@ -1,4 +1,4 @@
-/* Base styles. Component styles arrive with the dashboard in M3. */
+/* Base styles and dashboard layout. */
 
 :root {
   --bg: #ffffff;
@@ -7,6 +7,9 @@
   --text: #1b1f24;
   --text-muted: #5b6570;
   --accent: #1f5f8b;
+  --canada: #b3452f;
+  --austria: #2f7a53;
+  --error: #a3271a;
 
   color-scheme: light dark;
   font-family:
@@ -26,6 +29,9 @@
     --text: #e8eaed;
     --text-muted: #a3acb6;
     --accent: #6fb3d9;
+    --canada: #e8836c;
+    --austria: #6cc292;
+    --error: #f08a7c;
   }
 }
 
@@ -44,7 +50,7 @@ a {
 }
 
 .app {
-  max-width: 60rem;
+  max-width: 72rem;
   margin: 0 auto;
   padding: 2rem 1.25rem 4rem;
 }
@@ -59,20 +65,210 @@ a {
   color: var(--text-muted);
 }
 
-.notice {
-  border: 1px solid var(--border);
-  border-left: 4px solid var(--accent);
-  background: var(--surface);
-  border-radius: 4px;
-  padding: 1rem 1.25rem;
+.hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
 }
 
-.notice h2 {
+.error {
+  margin: 0.5rem 0 0;
+  color: var(--error);
+  font-size: 0.9rem;
+}
+
+/* Controls */
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem 1.25rem;
+  padding: 1.25rem;
+  margin-bottom: 1.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.control-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+}
+
+.control-group select,
+.control-group input[type='number'] {
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.control-group select:disabled {
+  opacity: 0.5;
+}
+
+.control-group--check label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 600;
+}
+
+.control-group--range {
+  grid-column: 1 / -1;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.75rem 1rem 1rem;
+  margin: 0;
+}
+
+.control-group--range legend {
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0 0.35rem;
+}
+
+.range-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.75rem;
+}
+
+/* Headline cards */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  padding: 1rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.card h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.card .figure {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.card .sub {
+  margin: 0.3rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.card--ratio {
+  border-left-width: 4px;
+}
+
+.card--austria {
+  border-left-color: var(--austria);
+}
+
+.card--canada {
+  border-left-color: var(--canada);
+}
+
+/* Equivalence panel */
+
+.equivalence {
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+}
+
+.equivalence h3 {
   margin: 0 0 0.5rem;
   font-size: 1rem;
 }
 
-.notice ul {
+.equivalence p {
   margin: 0;
-  padding-left: 1.25rem;
+}
+
+/* Table */
+
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  padding: 0.45rem 0.7rem;
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}
+
+tbody th {
+  text-align: right;
+  font-weight: 600;
+}
+
+tbody tr:last-child th,
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.row--highlight {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.ratio--austria {
+  color: var(--austria);
+  font-weight: 600;
+}
+
+.ratio--canada {
+  color: var(--canada);
+  font-weight: 600;
+}
+
+footer {
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }
