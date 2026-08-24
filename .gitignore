@@ -23,3 +23,7 @@ tmp/
 
 # Claude Code local overrides (personal, not shared)
 .claude/settings.local.json
+
+# Sourcing tool working files: fetched pages and its vendored Python dep.
+tools/cache/
+tools/pylibs/
