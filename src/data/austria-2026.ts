@@ -24,6 +24,8 @@ const RIS_ESTG_16 =
   'https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10004570&Paragraf=16';
 const RIS_ESTG_33 =
   'https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10004570&Paragraf=33';
+const RIS_ESTG_67 =
+  'https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10004570&Paragraf=67';
 
 const RETRIEVED = '2026-08-24';
 
@@ -76,6 +78,18 @@ export interface AustrianParameters {
   readonly socialInsuranceRefundMaximum: Sourced<number>;
   /** Extra refund available where the supplement applies (SV-Bonus). */
   readonly socialInsuranceRefundBonus: Sourced<number>;
+
+  /**
+   * Fixed-rate bands applied to special payments within the Jahressechstel,
+   * after deducting their own social insurance.
+   */
+  readonly specialPaymentBands: Sourced<BracketTable>;
+  /** Amount above which special payments leave the fixed-rate regime. */
+  readonly specialPaymentBandCeiling: Sourced<number>;
+  /** Jahressechstel at or below which the fixed rates do not apply at all. */
+  readonly specialPaymentExemptionLimit: Sourced<number>;
+  /** Annual ceiling for social insurance on special payments. */
+  readonly specialPaymentInsuranceCeiling: Sourced<number>;
 }
 
 export const AUSTRIA_2026: AustrianParameters = {
@@ -199,5 +213,38 @@ export const AUSTRIA_2026: AustrianParameters = {
     source: RIS_ESTG_33,
     retrieved: RETRIEVED,
     note: 'SV-Bonus: the cap rises by this much where the supplement applies.',
+  },
+
+  specialPaymentBands: {
+    value: [
+      { from: 0, to: 620, rate: 0 },
+      { from: 620, to: 25_000, rate: 0.06 },
+      { from: 25_000, to: 50_000, rate: 0.27 },
+      { from: 50_000, to: null, rate: 0.3575 },
+    ],
+    source: RIS_ESTG_67,
+    retrieved: RETRIEVED,
+    note: 'EStG section 67(1): first 620 free, next 24,380 at 6%, next 25,000 at 27%, next 33,333 at 35.75%.',
+  },
+
+  specialPaymentBandCeiling: {
+    value: 83_333,
+    source: RIS_ESTG_67,
+    retrieved: RETRIEVED,
+    note: 'EStG section 67(2): amounts above this are taxed under section 67(10) at the ordinary tariff.',
+  },
+
+  specialPaymentExemptionLimit: {
+    value: 2_615,
+    source: RIS_ESTG_67,
+    retrieved: RETRIEVED,
+    note: 'Freigrenze. Where the Jahressechstel is at most this, the fixed rates do not apply at all.',
+  },
+
+  specialPaymentInsuranceCeiling: {
+    value: 13_860,
+    source: SV_WERTE,
+    retrieved: RETRIEVED,
+    note: 'Annual Höchstbeitragsgrundlage for special payments, separate from the monthly ceiling on regular pay.',
   },
 };

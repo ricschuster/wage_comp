@@ -38,3 +38,16 @@ export type {
   AustriaRegularBreakdown,
   RegularSocialInsuranceBreakdown,
 } from './austria-regular.ts';
+export {
+  REGULAR_SHARE,
+  SPECIAL_SHARE,
+  computeAustriaSpecial,
+  specialSocialInsurance,
+  splitAnnualGross,
+} from './austria-special.ts';
+export type {
+  AustriaSpecialBreakdown,
+  SpecialSocialInsuranceBreakdown,
+} from './austria-special.ts';
+export { computeAustria } from './austria.ts';
+export type { AustriaOptions, AustriaResult } from './austria.ts';

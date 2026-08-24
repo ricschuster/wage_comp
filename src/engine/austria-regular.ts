@@ -117,10 +117,17 @@ export function commutingCreditSupplement(
   return maximum * ((end - taxableIncome) / (end - start));
 }
 
-/** Tax, social insurance and net pay on the regular salary portion. */
+/**
+ * Tax, social insurance and net pay on the regular salary portion.
+ *
+ * `additionalTaxableIncome` carries any special payment above the fixed-rate
+ * ceiling, which EStG 67(10) taxes at the ordinary tariff alongside regular
+ * pay. It is zero for every income the model is aimed at.
+ */
 export function computeAustriaRegular(
   regularGross: number,
   parameters: AustrianParameters,
+  additionalTaxableIncome = 0,
 ): AustriaRegularBreakdown {
   const gross = clampToZero(regularGross);
   const socialInsurance = regularSocialInsurance(gross, parameters.socialInsurance);
@@ -128,7 +135,8 @@ export function computeAustriaRegular(
   // The flat allowance may not create a loss from employment.
   const afterInsurance = clampToZero(gross - socialInsurance.contribution);
   const allowance = capAt(parameters.employmentExpenseAllowance.value, afterInsurance);
-  const taxableIncome = afterInsurance - allowance;
+  const taxableIncome =
+    afterInsurance - allowance + clampToZero(additionalTaxableIncome);
 
   const taxBeforeCredits = taxFromBrackets(taxableIncome, parameters.brackets.value);
 
