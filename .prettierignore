@@ -3,5 +3,8 @@ coverage
 node_modules
 package-lock.json
 
+# Sourcing tooling is Python and shell; Prettier has no parser for it.
+tools/
+
 # Markdown docs are hand-formatted (tables, wrapping); keep Prettier off them.
 **/*.md
