@@ -14,3 +14,10 @@ export {
   computeFederalTax,
 } from './canada-federal.ts';
 export type { FederalTaxBreakdown, FederalTaxInput } from './canada-federal.ts';
+export {
+  computePayroll,
+  cpp2Contribution,
+  cppContribution,
+  eiPremium,
+} from './canada-payroll.ts';
+export type { PayrollBreakdown } from './canada-payroll.ts';
