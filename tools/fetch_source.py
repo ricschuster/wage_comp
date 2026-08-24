@@ -59,6 +59,18 @@ def main() -> int:
     print(f'status={response.status_code} bytes={len(response.content)}')
     response.raise_for_status()
 
+    content_type = response.headers.get('content-type', '')
+    is_pdf = 'pdf' in content_type.lower() or response.content[:5] == b'%PDF-'
+
+    if is_pdf:
+        # Several Austrian sources publish their rate tables only as PDFs.
+        # Save as .pdf so it can be read directly rather than run through the
+        # HTML stripper, which would produce nothing useful.
+        pdf_path = CACHE / f'{name}.pdf'
+        pdf_path.write_bytes(response.content)
+        print(f'wrote {pdf_path}')
+        return 0
+
     html_path = CACHE / f'{name}.html'
     text_path = CACHE / f'{name}.txt'
     html_path.write_bytes(response.content)
