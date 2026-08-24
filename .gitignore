@@ -1,0 +1,25 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Node / build
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Logs and temp
+*.log
+tmp/
+.tmp/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Claude Code local overrides (personal, not shared)
+.claude/settings.local.json

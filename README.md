@@ -1,51 +1,85 @@
-# claude-project-template
+# wage_comp
 
-Stack-agnostic project harness for Claude Code workflows.
+Interactive tool comparing **after-tax purchasing power** between Canada and
+Austria across a configurable gross income range.
 
-> Status: WIP stub. The reusable harness lives in
-> [ricschuster/SCP_tutorial](https://github.com/ricschuster/SCP_tutorial) today
-> and has not yet been extracted and genericized here. See the checklist below.
+> Status: early build. The harness is in place; the tax engine is being built
+> one jurisdiction slice per pull request. Open issues are the live roadmap.
 
-## What this will be
+## What it does
 
-A GitHub template repository that seeds new projects with the process
-scaffolding (no tech stack baked in): docs framework (design notes, ADRs,
-handoffs), issue/PR templates, contribution and security policies, a license,
-and Claude Code working rules (`CLAUDE.md`, `.claude/settings.json`).
+Gross salary is an input, not an answer. The tool reports:
 
-## Setup checklist (to complete later)
+- Net take-home pay, both countries
+- PPP-adjusted take-home pay, both countries
+- Effective deduction rate, both countries
+- The Austria divided by Canada purchasing-power ratio
 
-Extraction and genericization:
+Above 1.0 the Austrian position is ahead, below 1.0 the Canadian position is
+ahead.
 
-- [ ] Copy the harness files from SCP_tutorial (everything except `src/` and
-      project-specific prose): `CLAUDE.md`, `CONTRIBUTING.md`, `SECURITY.md`,
-      `CHANGELOG.md`, `LICENSE`, `.gitignore`, `.claude/settings.json`,
-      `.github/`, `docs/` framework.
-- [ ] Replace project-specific naming with placeholders (for example
-      `{{PROJECT_NAME}}`) or clearly generic text. Files to scrub: `README.md`,
-      `CLAUDE.md`, `docs/design/00_project_brief.md`, `CHANGELOG.md`.
-- [ ] Add a "Using this template" section listing exactly what a new user must
-      fill in and delete.
-- [ ] Add one example ADR to model the format (for example
-      `docs/decisions/0001-record-architecture-decisions.md`).
+It also inverts the question: given a Canadian package, what Austrian gross
+would match it in purchasing-power terms? That is usually the more useful
+question, because nobody is offered the same gross in both countries.
 
-Automation (files copy, settings do NOT):
+## Design commitments
 
-- [ ] Add a settings-bootstrap script (or first-run GitHub Action) that reapplies
-      repo settings a template does not carry: branch protection on `main`,
-      auto-merge, and labels.
-- [ ] Decide on variable substitution: plain GitHub template (manual find/
-      replace) vs. copier/cookiecutter vs. the self-deleting setup-workflow
-      trick that find-replaces placeholders on first push then removes itself.
-- [ ] (Optional) Add a stack-neutral CI workflow (markdown lint, the no-em-dash
-      rule, docs-structure check) so branch protection has a real required
-      check.
+- **Every tax parameter carries a citation.** Source URL and retrieval date. A
+  value that cannot be sourced is recorded as a documented gap, not shipped as
+  a plausible guess.
+- **Correctness is tested, not asserted.** Engine output is pinned by golden
+  tests to results from official calculators, alongside unit tests for the
+  structural rules.
+- **The model is auditable.** Every output line expands to show the formula, its
+  inputs, the parameter values used, and where each came from.
+- **No backend.** A static site, so nothing to keep alive and nothing to pay
+  for. The exchange rate is a user input with a sourced, date-stamped default
+  rather than a live fetch.
 
-Finalize:
+## Scope
 
-- [ ] Enable the "Template repository" setting (already toggled on for this stub).
-- [ ] Update this README to real usage instructions and drop the WIP note.
+Single taxpayer, no dependants, employment income only, no voluntary deductions.
+Tax year 2026. British Columbia at first, with other provinces added as
+parameter files. Quebec is a separate module (QPP, QPIP, federal abatement) and
+is not yet supported.
+
+This is not tax advice and not a filing tool. Read
+`docs/design/00_project_brief.md` for what is modelled and what is not.
+
+## Development
+
+Node version is pinned in `.nvmrc`.
+
+```sh
+npm ci        # install
+npm run dev   # local dev server
+npm test      # unit and golden tests
+npm run build # production build
+```
+
+Full check suite, matching CI:
+
+```sh
+npm run format:check
+npm run lint
+npm run typecheck
+npm run test:coverage
+npm run build
+```
+
+## Repository layout
+
+- `src/engine/` pure, testable tax logic. No React imports.
+- `src/data/` tax parameter tables keyed by year, with provenance on every value.
+- `src/ui/` React components.
+- `docs/design/` design notes, `docs/decisions/` ADRs, `docs/handoffs/` session
+  handoffs.
+
+## Contributing
+
+See `CONTRIBUTING.md`. Corrections to tax parameters are especially welcome, and
+are most useful with a source link.
 
 ## License
 
-GNU General Public License v3.0 (planned, to match SCP_tutorial).
+GNU General Public License v3.0 or later. See `LICENSE`.
