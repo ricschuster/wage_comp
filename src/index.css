@@ -1,0 +1,78 @@
+/* Base styles. Component styles arrive with the dashboard in M3. */
+
+:root {
+  --bg: #ffffff;
+  --surface: #f6f7f9;
+  --border: #d8dce2;
+  --text: #1b1f24;
+  --text-muted: #5b6570;
+  --accent: #1f5f8b;
+
+  color-scheme: light dark;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  line-height: 1.55;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14171a;
+    --surface: #1d2126;
+    --border: #333a42;
+    --text: #e8eaed;
+    --text-muted: #a3acb6;
+    --accent: #6fb3d9;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a {
+  color: var(--accent);
+}
+
+.app {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.app h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.6rem;
+}
+
+.lede {
+  margin: 0 0 1.5rem;
+  color: var(--text-muted);
+}
+
+.notice {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  background: var(--surface);
+  border-radius: 4px;
+  padding: 1rem 1.25rem;
+}
+
+.notice h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.notice ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}

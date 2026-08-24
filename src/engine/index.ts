@@ -1,0 +1,10 @@
+/**
+ * Public surface of the tax engine.
+ *
+ * Everything here is pure and free of React. The UI imports from this barrel;
+ * engine modules import each other directly.
+ */
+
+export type { Bracket, BracketTable, Country, Sourced, TaxYear } from './types.ts';
+export { marginalRateAt, taxFromBrackets, validateBracketTable } from './brackets.ts';
+export { capAt, clampToZero, roundToCents } from './money.ts';
