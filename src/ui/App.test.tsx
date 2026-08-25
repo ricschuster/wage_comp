@@ -55,8 +55,8 @@ describe('App', () => {
     const { container, root } = render();
     const select = container.querySelector<HTMLSelectElement>('#province');
     expect(select).not.toBeNull();
-    expect(select?.options).toHaveLength(1);
-    expect(select?.options[0]?.textContent).toBe('British Columbia');
+    const names = [...(select?.options ?? [])].map((option) => option.textContent);
+    expect(names).toEqual(['Alberta', 'British Columbia', 'Ontario']);
     act(() => root.unmount());
   });
 

@@ -54,6 +54,7 @@ export const BRITISH_COLUMBIA_2026: ProvincialParameters = {
   },
 
   taxReduction: {
+    kind: 'phaseOut',
     maximumReduction: {
       value: 575,
       source: CRA_T4127,

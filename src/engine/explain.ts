@@ -169,23 +169,49 @@ export function explainCanada(
           canada.provincial.taxAfterCredits,
           [prov.creditRate],
         ),
+        ...(prov.surtax
+          ? [
+              entry(
+                'Surtax',
+                `charged on tax, not income: ${prov.surtax.value
+                  .map((tier) => `${pct(tier.rate)} of tax over ${n(tier.over)}`)
+                  .join(' + ')} = ${n(canada.provincial.surtax)}`,
+                canada.provincial.surtax,
+                [prov.surtax],
+              ),
+            ]
+          : []),
         ...(prov.taxReduction
           ? [
               entry(
                 'Low-income tax reduction',
-                `${n(canada.provincial.taxReduction)} applied, limited to tax payable`,
+                prov.taxReduction.kind === 'doubleBase'
+                  ? `lesser of the tax and 2 × ${n(prov.taxReduction.baseAmount.value)} less the tax = ${n(canada.provincial.taxReduction)}`
+                  : `${n(canada.provincial.taxReduction)} applied, limited to tax payable`,
                 canada.provincial.taxReduction,
-                [
-                  prov.taxReduction.maximumReduction,
-                  prov.taxReduction.phaseOutStart,
-                  prov.taxReduction.phaseOutRate,
-                ],
+                prov.taxReduction.kind === 'doubleBase'
+                  ? [prov.taxReduction.baseAmount]
+                  : [
+                      prov.taxReduction.maximumReduction,
+                      prov.taxReduction.phaseOutStart,
+                      prov.taxReduction.phaseOutRate,
+                    ],
+              ),
+            ]
+          : []),
+        ...(prov.healthPremium
+          ? [
+              entry(
+                'Health premium',
+                `charged on taxable income and not reduced by the tax reduction: ${n(canada.provincial.healthPremium)}`,
+                canada.provincial.healthPremium,
+                [prov.healthPremium],
               ),
             ]
           : []),
         entry(
           'Provincial tax payable',
-          `${n(canada.provincial.taxAfterCredits)} − ${n(canada.provincial.taxReduction)} = ${n(canada.provincial.taxPayable)}`,
+          `${n(canada.provincial.taxAfterCredits)} + ${n(canada.provincial.surtax)} surtax − ${n(canada.provincial.taxReduction)} reduction + ${n(canada.provincial.healthPremium)} premium = ${n(canada.provincial.taxPayable)}`,
           canada.provincial.taxPayable,
           [],
         ),

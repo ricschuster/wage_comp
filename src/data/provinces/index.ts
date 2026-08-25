@@ -1,18 +1,29 @@
 /**
  * Province lookup.
  *
- * One entry today. The lookup ships now anyway: retrofitting it after the
- * formulas harden is expensive, and with it in place adding a province is a
- * parameter file plus tests rather than a change to `src/engine/`.
+ * Adding a province is a parameter file plus tests, not a change to
+ * `src/engine/`. Ontario stretched that claim, since it needed a surtax and a
+ * health premium, but those live in the typed shape rather than in engine
+ * conditionals.
  */
 
+import { ALBERTA_2026 } from './ab-2026.ts';
 import { BRITISH_COLUMBIA_2026 } from './bc-2026.ts';
+import { ONTARIO_2026 } from './on-2026.ts';
 import type { ProvinceCode, ProvincialParameters } from './types.ts';
 
-export type { ProvinceCode, ProvincialParameters, TaxReduction } from './types.ts';
+export type {
+  HealthPremiumBand,
+  ProvinceCode,
+  ProvincialParameters,
+  SurtaxTier,
+  TaxReduction,
+} from './types.ts';
 
 const PROVINCES_2026: Readonly<Record<ProvinceCode, ProvincialParameters>> = {
+  AB: ALBERTA_2026,
   BC: BRITISH_COLUMBIA_2026,
+  ON: ONTARIO_2026,
 };
 
 /** Province codes the model supports, for populating a selector. */
