@@ -14,6 +14,7 @@ import { CANADA_FEDERAL_2026 } from '../data/canada-federal-2026.ts';
 import { CANADA_PAYROLL_2026 } from '../data/canada-payroll-2026.ts';
 import { CONVERSION_2026 } from '../data/conversion-2026.ts';
 import { getProvince } from '../data/provinces/index.ts';
+import { AuditView } from './AuditView.tsx';
 import { Charts } from './Charts.tsx';
 import { Controls, type DashboardInputs } from './Controls.tsx';
 import { Methodology } from './Methodology.tsx';
@@ -161,6 +162,8 @@ export function App() {
             </p>
           )}
 
+          {highlight ? <AuditView result={highlight} parameters={parameters} /> : null}
+
           <Charts rows={range.rows} />
 
           <ResultsTable rows={range.rows} highlightIncome={inputs.highlightIncome} />
@@ -173,10 +176,9 @@ export function App() {
           <button type="button" className="link" onClick={() => setView('methodology')}>
             methodology
           </button>{' '}
-          for what is and is not modelled, and what the ratio does not tell you. Every
-          parameter is sourced and cited in the{' '}
-          <a href="https://github.com/ricschuster/wage_comp">repository</a>. Charts and
-          the audit view are still to come.
+          for what is and is not modelled, and what the ratio does not tell you. Expand
+          the working to see every formula and its sources. Code and parameters are in
+          the <a href="https://github.com/ricschuster/wage_comp">repository</a>.
         </p>
       </footer>
     </main>

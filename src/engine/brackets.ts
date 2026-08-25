@@ -54,6 +54,48 @@ export function marginalRateAt(income: number, table: BracketTable): number {
   return table.length > 0 ? (table[table.length - 1] as Bracket).rate : 0;
 }
 
+/** How much income fell in one band, and the tax it produced. */
+export interface BandContribution {
+  readonly from: number;
+  readonly to: number | null;
+  readonly rate: number;
+  /** Income falling inside this band. */
+  readonly amount: number;
+  readonly tax: number;
+}
+
+/**
+ * The per-band working behind `taxFromBrackets`.
+ *
+ * Used by the audit view so a reader can reconstruct the total by hand. Only
+ * bands that actually took income are returned.
+ */
+export function bracketBreakdown(
+  income: number,
+  table: BracketTable,
+): BandContribution[] {
+  if (!Number.isFinite(income) || income <= 0) {
+    return [];
+  }
+
+  const bands: BandContribution[] = [];
+  for (const band of table) {
+    if (income <= band.from) {
+      break;
+    }
+    const upper = band.to === null ? income : Math.min(income, band.to);
+    const amount = upper - band.from;
+    bands.push({
+      from: band.from,
+      to: band.to,
+      rate: band.rate,
+      amount,
+      tax: amount * band.rate,
+    });
+  }
+  return bands;
+}
+
 /**
  * Structural problems with a bracket table, as human-readable strings.
  *
