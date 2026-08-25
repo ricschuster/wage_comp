@@ -17,6 +17,7 @@ import { AssumptionsPanel } from './AssumptionsPanel.tsx';
 import { AuditView } from './AuditView.tsx';
 import { Charts } from './Charts.tsx';
 import { Controls, type DashboardInputs } from './Controls.tsx';
+import { EmployerCostPanel } from './EmployerCostPanel.tsx';
 import { Methodology } from './Methodology.tsx';
 import { ResultsTable } from './ResultsTable.tsx';
 import { SummaryCards } from './SummaryCards.tsx';
@@ -218,6 +219,8 @@ export function App() {
               Enter a highlighted income above zero to see results.
             </p>
           )}
+
+          {highlight ? <EmployerCostPanel result={highlight} /> : null}
 
           {highlight ? <AuditView result={highlight} parameters={parameters} /> : null}
 

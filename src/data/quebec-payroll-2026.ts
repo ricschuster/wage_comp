@@ -122,4 +122,31 @@ export const QUEBEC_PAYROLL_2026: PayrollParameters = {
       note: 'Table 8.8, maximum annual employee premium.',
     },
   },
+
+  employer: {
+    eiRate: {
+      value: 0.0182,
+      source: CRA_T4127,
+      retrieved: RETRIEVED,
+      note: 'Table 8.7, Quebec employer rate: 1.4 times the reduced employee rate.',
+    },
+    eiMaximumPremium: {
+      value: 1_253.98,
+      source: CRA_T4127,
+      retrieved: RETRIEVED,
+      note: 'Table 8.7, maximum annual employer premium in Quebec.',
+    },
+    qpipRate: {
+      value: 0.00602,
+      source: CRA_T4127,
+      retrieved: RETRIEVED,
+      note: 'Table 8.8, employer rate. Higher than the employee rate.',
+    },
+    qpipMaximumPremium: {
+      value: 620.06,
+      source: CRA_T4127,
+      retrieved: RETRIEVED,
+      note: 'Table 8.8, maximum annual employer premium.',
+    },
+  },
 };

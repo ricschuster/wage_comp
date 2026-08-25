@@ -65,6 +65,8 @@ export type {
 } from './compare.ts';
 export { EquivalenceError, solveEquivalentAustrianGross } from './solve.ts';
 export type { EquivalenceResult } from './solve.ts';
+export { austriaEmployerCost, canadaEmployerCost } from './employer.ts';
+export type { EmployerCost } from './employer.ts';
 export { explainAustria, explainCanada, explainComparison } from './explain.ts';
 export type { TraceSection } from './explain.ts';
 export { bracketBreakdown } from './brackets.ts';

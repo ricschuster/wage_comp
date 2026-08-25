@@ -64,6 +64,20 @@ export interface QpipParameters {
   readonly maximumPremium: Sourced<number>;
 }
 
+/**
+ * Employer-side rates.
+ *
+ * CPP, QPP and CPP2 are matched by the employer exactly, so only the rates
+ * that differ are listed here. EI is the notable one: employers pay 1.4 times
+ * the employee rate.
+ */
+export interface EmployerParameters {
+  readonly eiRate: Sourced<number>;
+  readonly eiMaximumPremium: Sourced<number>;
+  readonly qpipRate?: Sourced<number>;
+  readonly qpipMaximumPremium?: Sourced<number>;
+}
+
 export interface PayrollParameters {
   /** CPP outside Quebec, QPP inside it. Same shape, different rates. */
   readonly cpp: CppParameters;
@@ -71,6 +85,7 @@ export interface PayrollParameters {
   readonly ei: EiParameters;
   /** Quebec only. */
   readonly qpip?: QpipParameters;
+  readonly employer: EmployerParameters;
 }
 
 export const CANADA_PAYROLL_2026: PayrollParameters = {
@@ -152,6 +167,21 @@ export const CANADA_PAYROLL_2026: PayrollParameters = {
       source: CRA_EI,
       retrieved: RETRIEVED,
       note: 'Maximum annual employee premium, federal table.',
+    },
+  },
+
+  employer: {
+    eiRate: {
+      value: 0.02282,
+      source: CRA_EI,
+      retrieved: RETRIEVED,
+      note: 'Employers pay 1.4 times the employee rate. CPP and CPP2 are matched exactly.',
+    },
+    eiMaximumPremium: {
+      value: 1_572.3,
+      source: CRA_EI,
+      retrieved: RETRIEVED,
+      note: 'Maximum annual employer premium, federal table.',
     },
   },
 };

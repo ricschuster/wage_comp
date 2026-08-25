@@ -100,8 +100,9 @@ export function Methodology() {
       <h3>What is not modelled</h3>
       <ul>
         <li>
-          Employer-side costs on either side. Austria&apos;s employer load is far
-          heavier, which is part of why Austrian nominal salaries sit lower
+          Provincial employer health taxes. They depend on an employer&apos;s total
+          payroll rather than on one salary, so they cannot be attributed to a single
+          job. Austria&apos;s Vienna transport levy is omitted for the same reason
         </li>
         <li>
           Austria: family benefits, commuter allowance (Pendlerpauschale), collective
@@ -122,6 +123,25 @@ export function Methodology() {
           Quebec included
         </li>
       </ul>
+
+      <h3>Cost to the employer</h3>
+      <p>
+        The dashboard also shows what a job costs the employer, which is a different
+        question from what the employee receives. Canada: matched pension contributions
+        plus employment insurance at 1.4 times the employee rate, and parental insurance
+        in Quebec. Austria: employer social insurance at 20.98%, plus the company
+        pension fund, the family burden levy, its surcharge and the municipal payroll
+        tax.
+      </p>
+      <p className="note">
+        The structural difference matters. Canada&apos;s employer contributions are all
+        capped and stop rising by roughly $85,000 of salary, falling from about 8% of
+        salary to 2% at the top of the range. Austria&apos;s wage levies are{' '}
+        <strong>uncapped</strong>, so its load stays near 30% until its own insurance
+        ceilings bind. That is a large part of why Austrian nominal salaries for
+        equivalent roles sit lower: the same total cost to an employer buys less
+        headline pay.
+      </p>
 
       <h3>How the conversion works</h3>
       <p>
