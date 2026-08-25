@@ -3,12 +3,9 @@ import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { App } from './App.tsx';
 import { Methodology } from './Methodology.tsx';
+import { SOURCE_GROUPS } from '../data/source-groups.ts';
 import { collectAllSources } from '../data/sources.ts';
-import { AUSTRIA_2026 } from '../data/austria-2026.ts';
-import { CANADA_FEDERAL_2026 } from '../data/canada-federal-2026.ts';
-import { CANADA_PAYROLL_2026 } from '../data/canada-payroll-2026.ts';
-import { CONVERSION_2026 } from '../data/conversion-2026.ts';
-import { getProvince } from '../data/provinces/index.ts';
+import { SUPPORTED_PROVINCES, getProvince } from '../data/provinces/index.ts';
 
 // The app syncs its state to the address bar and reads it back on mount.
 beforeEach(() => {
@@ -25,13 +22,7 @@ function render(node: React.ReactElement): { container: HTMLElement; root: Root 
   return { container, root };
 }
 
-const EXPECTED_SOURCES = collectAllSources([
-  { label: 'Canada federal', parameters: CANADA_FEDERAL_2026 },
-  { label: 'Canada payroll', parameters: CANADA_PAYROLL_2026 },
-  { label: 'British Columbia', parameters: getProvince('BC') },
-  { label: 'Austria', parameters: AUSTRIA_2026 },
-  { label: 'Conversion', parameters: CONVERSION_2026 },
-]);
+const EXPECTED_SOURCES = collectAllSources(SOURCE_GROUPS);
 
 describe('Methodology', () => {
   it('lists every sourced parameter, so the page cannot drift from the model', () => {
@@ -84,9 +75,25 @@ describe('Methodology', () => {
     act(() => root.unmount());
   });
 
-  it('states that Quebec is absent rather than approximated', () => {
+  it('describes what makes Quebec different rather than omitting it', () => {
     const { container, root } = render(<Methodology />);
-    expect(container.textContent).toMatch(/Quebec/);
+    const text = container.textContent ?? '';
+    expect(text).toMatch(/QPP/);
+    expect(text).toMatch(/QPIP/);
+    expect(text).toMatch(/abatement/i);
+    expect(text).toMatch(/deduction for workers/i);
+    act(() => root.unmount());
+  });
+
+  it('cites every jurisdiction, not just a hardcoded few', () => {
+    const { container, root } = render(<Methodology />);
+    const text = container.textContent ?? '';
+    // The source table is built from the province lookup, so each jurisdiction
+    // must appear by name. If one were added and the page not updated, this
+    // fails rather than the citation list quietly going stale.
+    for (const code of SUPPORTED_PROVINCES) {
+      expect(text, code).toContain(getProvince(code).name);
+    }
     act(() => root.unmount());
   });
 });

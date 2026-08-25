@@ -13,6 +13,8 @@ export interface PayrollBreakdown {
   readonly cppContribution: number;
   readonly cpp2Contribution: number;
   readonly eiPremium: number;
+  /** Quebec parental insurance premium, zero outside Quebec. */
+  readonly qpipPremium: number;
   readonly totalContributions: number;
   /**
    * Deducted from income before tax: the CPP first additional portion plus all
@@ -73,7 +75,23 @@ export function eiPremium(
   return capAt(insurable * rate.value, maximumPremium.value);
 }
 
-/** All three contributions, split by tax treatment. */
+/** Quebec parental insurance premium. Zero where the plan does not apply. */
+export function qpipPremium(
+  employmentIncome: number,
+  parameters: PayrollParameters,
+): number {
+  const qpip = parameters.qpip;
+  if (!qpip) {
+    return 0;
+  }
+  const insurable = capAt(
+    clampToZero(employmentIncome),
+    qpip.maximumInsurableEarnings.value,
+  );
+  return capAt(insurable * qpip.rate.value, qpip.maximumPremium.value);
+}
+
+/** All contributions, split by tax treatment. */
 export function computePayroll(
   employmentIncome: number,
   parameters: PayrollParameters,
@@ -81,6 +99,7 @@ export function computePayroll(
   const cpp = cppContribution(employmentIncome, parameters);
   const cpp2 = cpp2Contribution(employmentIncome, parameters);
   const ei = eiPremium(employmentIncome, parameters);
+  const qpip = qpipPremium(employmentIncome, parameters);
 
   const { baseRate, firstAdditionalRate, rate } = parameters.cpp;
   // Split by rate share rather than recomputing from earnings, so the split
@@ -92,8 +111,10 @@ export function computePayroll(
     cppContribution: roundToCents(cpp),
     cpp2Contribution: roundToCents(cpp2),
     eiPremium: roundToCents(ei),
-    totalContributions: roundToCents(cpp + cpp2 + ei),
+    qpipPremium: roundToCents(qpip),
+    totalContributions: roundToCents(cpp + cpp2 + ei + qpip),
     deductibleAmount: roundToCents(cppDeductible + cpp2),
-    creditableAmount: roundToCents(cppCreditable + ei),
+    // QPIP joins the federal credit for a Quebec resident, per T4127 K2RQ.
+    creditableAmount: roundToCents(cppCreditable + ei + qpip),
   };
 }

@@ -77,8 +77,13 @@ describe('decodeShareState', () => {
     expect(state.inputs.highlightIncome).toBe(70_000);
   });
 
-  it('rejects an unsupported province rather than crashing', () => {
-    expect(decodeShareState('p=QC').inputs.province).toBe('BC');
+  it('accepts a supported province', () => {
+    expect(decodeShareState('p=QC').inputs.province).toBe('QC');
+  });
+
+  it('rejects an unknown province code rather than crashing', () => {
+    expect(decodeShareState('p=XX').inputs.province).toBe('BC');
+    expect(decodeShareState('p=').inputs.province).toBe('BC');
   });
 
   it('drops an out-of-range assumption instead of clamping it', () => {

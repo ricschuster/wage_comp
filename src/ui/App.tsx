@@ -10,10 +10,8 @@ import {
   type EquivalenceResult,
 } from '../engine/index.ts';
 import { AUSTRIA_2026 } from '../data/austria-2026.ts';
-import { CANADA_FEDERAL_2026 } from '../data/canada-federal-2026.ts';
-import { CANADA_PAYROLL_2026 } from '../data/canada-payroll-2026.ts';
+import { canadaParametersFor } from '../data/canada-2026.ts';
 import { applyAssumptions, type AssumptionOverrides } from '../data/assumptions.ts';
-import { getProvince } from '../data/provinces/index.ts';
 import { getScenario } from '../data/scenarios.ts';
 import { AssumptionsPanel } from './AssumptionsPanel.tsx';
 import { AuditView } from './AuditView.tsx';
@@ -92,11 +90,9 @@ export function App() {
 
   const parameters = useMemo<ComparisonParameters>(
     () => ({
-      canada: {
-        federal: CANADA_FEDERAL_2026,
-        payroll: CANADA_PAYROLL_2026,
-        province: getProvince(inputs.province),
-      },
+      // Assembled by province, so Quebec always gets QPP and QPIP rather than
+      // CPP, and nowhere else ever does.
+      canada: canadaParametersFor(inputs.province),
       austria: AUSTRIA_2026,
       conversion: applyAssumptions(overrides),
     }),

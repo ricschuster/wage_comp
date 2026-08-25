@@ -24,13 +24,14 @@ describe('province lookup', () => {
     expect(getProvince('ON').code).toBe('ON');
   });
 
-  it('lists every jurisdiction outside Quebec, west to east then territories', () => {
+  it('lists every jurisdiction, west to east then territories', () => {
     expect(SUPPORTED_PROVINCES).toEqual([
       'BC',
       'AB',
       'SK',
       'MB',
       'ON',
+      'QC',
       'NB',
       'NS',
       'PE',
@@ -69,14 +70,29 @@ describe('province lookup', () => {
     }
   });
 
-  it('does not offer Quebec, which needs its own module', () => {
-    expect(SUPPORTED_PROVINCES).not.toContain('QC');
+  it('offers Quebec, with the parameters that make it different', () => {
+    const qc = getProvince('QC');
+    expect(qc.federalAbatementRate?.value).toBe(0.165);
+    expect(qc.workerDeduction?.rate.value).toBe(0.06);
+    // Nowhere else has either.
+    for (const code of SUPPORTED_PROVINCES) {
+      if (code === 'QC') continue;
+      const other = getProvince(code as ProvinceCode);
+      expect(other.federalAbatementRate, code).toBeUndefined();
+      expect(other.workerDeduction, code).toBeUndefined();
+    }
   });
 });
 
 describe('published bracket constants', () => {
-  // CRA publishes a constant KP per band such that tax = rate x income - KP.
-  // Reproducing them checks each rate table against CRA's own arithmetic.
+  // CRA publishes a constant KP per band such that tax = rate x income - KP,
+  // and Revenu Quebec publishes the same thing as K in TP-1015.F. Reproducing
+  // them checks each rate table against the tax authority's own arithmetic
+  // rather than against the page the rates were transcribed from.
+  //
+  // Compared within a dollar, because the two authorities round differently:
+  // CRA's constants match a rounded value, Quebec's a truncated one (its top
+  // constant computes to 10,465.54 and is published as 10,465).
   const expected: Record<string, number[]> = {
     AB: [0, 1_224, 4_309, 6_160, 8_628, 12_331],
     BC: [0, 1_330, 4_150, 6_220, 9_604, 13_603, 23_428],
@@ -88,6 +104,7 @@ describe('published bracket constants', () => {
     NU: [0, 1_674, 3_906, 8_442],
     ON: [0, 2_210, 4_376, 5_876, 8_076],
     PE: [0, 1_347, 3_407, 4_497, 6_464],
+    QC: [0, 2_717, 8_151, 10_465],
     SK: [0, 1_091, 4_207],
     YT: [0, 1_522, 3_745, 7_193, 18_193],
   };
@@ -102,9 +119,15 @@ describe('published bracket constants', () => {
           const upper = lower.to === null ? band.from : Math.min(band.from, lower.to);
           tax += (upper - lower.from) * lower.rate;
         }
-        return Math.round(band.rate * band.from - tax);
+        return band.rate * band.from - tax;
       });
-      expect(constants).toEqual(expected[code]);
+      const published = expected[code] as number[];
+      constants.forEach((value, index) => {
+        expect(
+          Math.abs(value - (published[index] as number)),
+          `${code} band ${index}`,
+        ).toBeLessThanOrEqual(1);
+      });
     });
   }
 });

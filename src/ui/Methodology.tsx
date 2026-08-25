@@ -1,9 +1,5 @@
 import { useMemo } from 'react';
-import { AUSTRIA_2026 } from '../data/austria-2026.ts';
-import { CANADA_FEDERAL_2026 } from '../data/canada-federal-2026.ts';
-import { CANADA_PAYROLL_2026 } from '../data/canada-payroll-2026.ts';
-import { CONVERSION_2026 } from '../data/conversion-2026.ts';
-import { getProvince } from '../data/provinces/index.ts';
+import { SOURCE_GROUPS } from '../data/source-groups.ts';
 import { collectAllSources } from '../data/sources.ts';
 
 /** Shortens a URL to something readable in a table cell. */
@@ -16,17 +12,7 @@ function hostOf(url: string): string {
 }
 
 export function Methodology() {
-  const sources = useMemo(
-    () =>
-      collectAllSources([
-        { label: 'Canada federal', parameters: CANADA_FEDERAL_2026 },
-        { label: 'Canada payroll', parameters: CANADA_PAYROLL_2026 },
-        { label: 'British Columbia', parameters: getProvince('BC') },
-        { label: 'Austria', parameters: AUSTRIA_2026 },
-        { label: 'Conversion', parameters: CONVERSION_2026 },
-      ]),
-    [],
-  );
+  const sources = useMemo(() => collectAllSources(SOURCE_GROUPS), []);
 
   return (
     <div className="prose">
@@ -55,7 +41,14 @@ export function Methodology() {
           Provincial brackets, the provincial basic personal amount, and the BC tax
           reduction
         </li>
-        <li>CPP, the second additional CPP contribution (CPP2), and EI</li>
+        <li>
+          CPP, the second additional CPP contribution (CPP2), and EI. In Quebec, QPP and
+          QPIP instead, with EI at its reduced Quebec rate
+        </li>
+        <li>
+          For Quebec: the 16.5% federal abatement, and the deduction for workers, which
+          replaces the contribution credits the rest of Canada grants
+        </li>
         <li>
           The tax treatment of contributions is split rather than lumped: the CPP base
           portion at 4.95% and EI produce non-refundable credits, while the CPP
@@ -125,8 +118,8 @@ export function Methodology() {
           model uses the national rate
         </li>
         <li>
-          Quebec, which needs its own module for QPP, QPIP and the federal abatement,
-          and is absent rather than approximated
+          Nothing province-specific is missing: all thirteen jurisdictions are modelled,
+          Quebec included
         </li>
       </ul>
 

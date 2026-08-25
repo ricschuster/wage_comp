@@ -173,7 +173,7 @@ describe('AssumptionsPanel', () => {
     window.history.replaceState(
       null,
       '',
-      `${window.location.pathname}?b=nonsense&p=QC&fx=500`,
+      `${window.location.pathname}?b=nonsense&p=XX&fx=500`,
     );
     const { container, root } = render();
 
