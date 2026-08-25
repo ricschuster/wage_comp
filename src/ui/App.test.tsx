@@ -1,7 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { App } from './App.tsx';
+
+// The app syncs its state to the address bar and reads it back on mount, so
+// each test starts from a clean URL rather than inheriting the previous one.
+beforeEach(() => {
+  window.history.replaceState(null, '', window.location.pathname);
+});
 
 /** Renders the app into a detached container and returns it. */
 function render(): { container: HTMLElement; root: Root } {

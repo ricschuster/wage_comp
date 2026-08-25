@@ -273,6 +273,141 @@ footer {
   color: var(--text-muted);
 }
 
+/* Assumptions, scenarios and sharing */
+
+.assumptions {
+  margin: 0 0 1.5rem;
+  padding: 0.75rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.assumptions summary {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.assumptions-block {
+  margin-top: 1.25rem;
+}
+
+.assumptions-block h4 {
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--bg);
+  background: var(--accent);
+  border-radius: 999px;
+}
+
+.scenario-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.scenario,
+.reset-all,
+.share-row button {
+  padding: 0.35rem 0.7rem;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.scenario:hover,
+.reset-all:hover:not(:disabled),
+.share-row button:hover {
+  border-color: var(--accent);
+}
+
+.reset-all:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.assumption-list {
+  margin: 0 0 0.75rem;
+}
+
+.assumption {
+  display: grid;
+  grid-template-columns: minmax(10rem, 16rem) 1fr;
+  gap: 0.4rem 1rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.assumption:last-child {
+  border-bottom: none;
+}
+
+.assumption dt {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.assumption dd {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.assumption input {
+  width: 10rem;
+  padding: 0.3rem 0.45rem;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.assumption .hint {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.share-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.share-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.35rem 0.5rem;
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+@media (max-width: 40rem) {
+  .assumption {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Audit view */
 
 .audit {

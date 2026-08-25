@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { App } from './App.tsx';
@@ -13,6 +13,11 @@ import { CANADA_FEDERAL_2026 } from '../data/canada-federal-2026.ts';
 import { CANADA_PAYROLL_2026 } from '../data/canada-payroll-2026.ts';
 import { CONVERSION_2026 } from '../data/conversion-2026.ts';
 import { getProvince } from '../data/provinces/index.ts';
+
+// The app syncs its state to the address bar and reads it back on mount.
+beforeEach(() => {
+  window.history.replaceState(null, '', window.location.pathname);
+});
 
 function render(node: React.ReactElement): { container: HTMLElement; root: Root } {
   const container = document.createElement('div');
