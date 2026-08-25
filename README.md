@@ -92,6 +92,8 @@ npm run test:coverage
 npm run build
 ```
 
+The yearly parameter refresh follows `docs/ANNUAL_UPDATE.md`.
+
 Helper scripts:
 
 ```sh
