@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   EquivalenceError,
   compare,
@@ -12,31 +12,83 @@ import {
 import { AUSTRIA_2026 } from '../data/austria-2026.ts';
 import { CANADA_FEDERAL_2026 } from '../data/canada-federal-2026.ts';
 import { CANADA_PAYROLL_2026 } from '../data/canada-payroll-2026.ts';
-import { CONVERSION_2026 } from '../data/conversion-2026.ts';
+import { applyAssumptions, type AssumptionOverrides } from '../data/assumptions.ts';
 import { getProvince } from '../data/provinces/index.ts';
+import { getScenario } from '../data/scenarios.ts';
+import { AssumptionsPanel } from './AssumptionsPanel.tsx';
 import { AuditView } from './AuditView.tsx';
 import { Charts } from './Charts.tsx';
 import { Controls, type DashboardInputs } from './Controls.tsx';
 import { Methodology } from './Methodology.tsx';
 import { ResultsTable } from './ResultsTable.tsx';
 import { SummaryCards } from './SummaryCards.tsx';
+import { decodeShareState, encodeShareState, shareUrl } from './share-state.ts';
 
 type View = 'dashboard' | 'methodology';
 
-const DEFAULT_INPUTS: DashboardInputs = {
-  province: 'BC',
-  basis: 'ppp',
-  pppBasis: 'household',
-  specialPayments: true,
-  highlightIncome: 100_000,
-  rangeStart: 40_000,
-  rangeEnd: 300_000,
-  rangeIncrement: 20_000,
-};
+/** Reads the opening URL once, so a shared link lands on its own scenario. */
+function initialState(): { inputs: DashboardInputs; overrides: AssumptionOverrides } {
+  if (typeof window === 'undefined') {
+    return decodeShareState('');
+  }
+  return decodeShareState(window.location.search);
+}
 
 export function App() {
-  const [inputs, setInputs] = useState<DashboardInputs>(DEFAULT_INPUTS);
+  // Lazy initialiser: the opening URL is read exactly once, on mount.
+  const [initial] = useState(initialState);
+  const [inputs, setInputs] = useState<DashboardInputs>(initial.inputs);
+  const [overrides, setOverrides] = useState<AssumptionOverrides>(initial.overrides);
   const [view, setView] = useState<View>('dashboard');
+  const [copied, setCopied] = useState(false);
+
+  // Keep the address bar in step, so a copied URL always matches the screen.
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const query = encodeShareState({ inputs, overrides });
+    const next = query
+      ? `${window.location.pathname}?${query}`
+      : window.location.pathname;
+    window.history.replaceState(null, '', next);
+  }, [inputs, overrides]);
+
+  const link = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return '';
+    }
+    return shareUrl({ inputs, overrides }, window.location);
+  }, [inputs, overrides]);
+
+  const copy = useCallback(() => {
+    setCopied(true);
+    void navigator.clipboard?.writeText(link).catch(() => {
+      // Clipboard access can be refused; the field is selectable either way.
+    });
+  }, [link]);
+
+  useEffect(() => {
+    if (!copied) {
+      return;
+    }
+    const timer = setTimeout(() => setCopied(false), 2_000);
+    return () => clearTimeout(timer);
+  }, [copied]);
+
+  const applyScenario = useCallback((id: string) => {
+    const scenario = getScenario(id);
+    if (!scenario) {
+      return;
+    }
+    setInputs((current) => ({
+      ...current,
+      province: scenario.province,
+      basis: scenario.basis,
+      pppBasis: scenario.pppBasis,
+      specialPayments: scenario.specialPayments,
+    }));
+  }, []);
 
   const parameters = useMemo<ComparisonParameters>(
     () => ({
@@ -46,9 +98,9 @@ export function App() {
         province: getProvince(inputs.province),
       },
       austria: AUSTRIA_2026,
-      conversion: CONVERSION_2026,
+      conversion: applyAssumptions(overrides),
     }),
-    [inputs.province],
+    [inputs.province, overrides],
   );
 
   const options = useMemo<ComparisonOptions>(
@@ -149,6 +201,15 @@ export function App() {
       ) : (
         <>
           <Controls inputs={inputs} onChange={setInputs} rangeError={range.error} />
+
+          <AssumptionsPanel
+            overrides={overrides}
+            onChange={setOverrides}
+            onScenario={applyScenario}
+            shareLink={link}
+            onCopy={copy}
+            copied={copied}
+          />
 
           {highlight ? (
             <SummaryCards
