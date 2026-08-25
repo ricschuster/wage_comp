@@ -43,7 +43,10 @@ export function Controls({ inputs, onChange, rangeError }: ControlsProps) {
             </option>
           ))}
         </select>
-        <p className="hint">Others are not yet supported, rather than approximated.</p>
+        <p className="hint">
+          All jurisdictions except Quebec, which needs its own module and is absent
+          rather than approximated.
+        </p>
       </div>
 
       <div className="control-group">

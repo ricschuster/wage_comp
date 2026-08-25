@@ -3,6 +3,7 @@ import { validateBracketTable } from './brackets.ts';
 import {
   computeProvincialTax,
   healthPremiumOn,
+  provincialBasicPersonalAmount,
   surtaxOn,
   taxReductionAmount,
 } from './canada-provincial.ts';
@@ -23,8 +24,31 @@ describe('province lookup', () => {
     expect(getProvince('ON').code).toBe('ON');
   });
 
-  it('lists the supported provinces for a selector', () => {
-    expect(SUPPORTED_PROVINCES).toEqual(['AB', 'BC', 'ON']);
+  it('lists every jurisdiction outside Quebec, west to east then territories', () => {
+    expect(SUPPORTED_PROVINCES).toEqual([
+      'BC',
+      'AB',
+      'SK',
+      'MB',
+      'ON',
+      'NB',
+      'NS',
+      'PE',
+      'NL',
+      'YT',
+      'NT',
+      'NU',
+    ]);
+  });
+
+  it('gives every jurisdiction a distinct name and a matching code', () => {
+    const names = SUPPORTED_PROVINCES.map(
+      (code) => getProvince(code as ProvinceCode).name,
+    );
+    expect(new Set(names).size).toBe(names.length);
+    for (const code of SUPPORTED_PROVINCES) {
+      expect(getProvince(code as ProvinceCode).code).toBe(code);
+    }
   });
 
   it('gives every supported province a valid bracket table and a credit rate', () => {
@@ -56,7 +80,16 @@ describe('published bracket constants', () => {
   const expected: Record<string, number[]> = {
     AB: [0, 1_224, 4_309, 6_160, 8_628, 12_331],
     BC: [0, 1_330, 4_150, 6_220, 9_604, 13_603, 23_428],
+    MB: [0, 917, 5_567],
+    NB: [0, 2_407, 4_501, 11_286],
+    NL: [0, 2_591, 3_753, 6_943, 11_410, 14_263, 17_117, 22_823],
+    NS: [0, 1_909, 2_976, 3_784, 9_283],
+    NT: [0, 1_431, 5_247, 8_436],
+    NU: [0, 1_674, 3_906, 8_442],
     ON: [0, 2_210, 4_376, 5_876, 8_076],
+    PE: [0, 1_347, 3_407, 4_497, 6_464],
+    SK: [0, 1_091, 4_207],
+    YT: [0, 1_522, 3_745, 7_193, 18_193],
   };
 
   for (const code of SUPPORTED_PROVINCES) {
@@ -127,6 +160,59 @@ describe('2026 Ontario parameters', () => {
 
   it('has a six-band health premium', () => {
     expect(ON.healthPremium?.value).toHaveLength(6);
+  });
+});
+
+describe('income-tested basic personal amounts', () => {
+  const MB = getProvince('MB');
+  const YT = getProvince('YT');
+
+  it('applies only to Manitoba and Yukon', () => {
+    for (const code of SUPPORTED_PROVINCES) {
+      const province = getProvince(code as ProvinceCode);
+      const tested = province.basicPersonalAmountPhaseOut !== undefined;
+      expect(tested, code).toBe(code === 'MB' || code === 'YT');
+    }
+  });
+
+  it('holds the full amount below the taper', () => {
+    expect(provincialBasicPersonalAmount(0, MB)).toBe(15_780);
+    expect(provincialBasicPersonalAmount(200_000, MB)).toBe(15_780);
+    expect(provincialBasicPersonalAmount(100_000, YT)).toBe(16_452);
+  });
+
+  it('takes Manitoba to zero, unlike the federal taper which stops at a floor', () => {
+    expect(provincialBasicPersonalAmount(400_000, MB)).toBe(0);
+    expect(provincialBasicPersonalAmount(600_000, MB)).toBe(0);
+    expect(provincialBasicPersonalAmount(300_000, MB)).toBeCloseTo(7_890, 6);
+  });
+
+  it('mirrors the federal floor for Yukon', () => {
+    expect(provincialBasicPersonalAmount(258_482, YT)).toBe(14_829);
+    expect(provincialBasicPersonalAmount(500_000, YT)).toBe(14_829);
+    const midpoint = (181_440 + 258_482) / 2;
+    expect(provincialBasicPersonalAmount(midpoint, YT)).toBeCloseTo(
+      (16_452 + 14_829) / 2,
+      6,
+    );
+  });
+
+  it('never increases as income rises', () => {
+    for (const province of [MB, YT]) {
+      let previous = Number.POSITIVE_INFINITY;
+      for (let income = 0; income <= 500_000; income += 10_000) {
+        const amount = provincialBasicPersonalAmount(income, province);
+        expect(amount).toBeLessThanOrEqual(previous);
+        previous = amount;
+      }
+    }
+  });
+
+  it('costs a Manitoba high earner the whole personal amount', () => {
+    const low = computeProvincialTax({ taxableIncome: 199_000 }, MB);
+    const high = computeProvincialTax({ taxableIncome: 401_000 }, MB);
+    expect(low.basicPersonalAmount).toBe(15_780);
+    expect(high.basicPersonalAmount).toBe(0);
   });
 });
 
@@ -277,11 +363,15 @@ describe('computeProvincialTax', () => {
     expect(result.taxPayable).toBe(0);
   });
 
-  it('reports zero surtax and premium for provinces without them', () => {
-    for (const province of [AB, BC]) {
-      const result = computeProvincialTax({ taxableIncome: 200_000 }, province);
-      expect(result.surtax).toBe(0);
-      expect(result.healthPremium).toBe(0);
+  it('reports zero surtax and premium everywhere except Ontario', () => {
+    for (const code of SUPPORTED_PROVINCES) {
+      if (code === 'ON') continue;
+      const result = computeProvincialTax(
+        { taxableIncome: 200_000 },
+        getProvince(code as ProvinceCode),
+      );
+      expect(result.surtax, code).toBe(0);
+      expect(result.healthPremium, code).toBe(0);
     }
   });
 
