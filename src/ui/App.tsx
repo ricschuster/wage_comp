@@ -14,6 +14,7 @@ import { CANADA_FEDERAL_2026 } from '../data/canada-federal-2026.ts';
 import { CANADA_PAYROLL_2026 } from '../data/canada-payroll-2026.ts';
 import { CONVERSION_2026 } from '../data/conversion-2026.ts';
 import { getProvince } from '../data/provinces/index.ts';
+import { Charts } from './Charts.tsx';
 import { Controls, type DashboardInputs } from './Controls.tsx';
 import { Methodology } from './Methodology.tsx';
 import { ResultsTable } from './ResultsTable.tsx';
@@ -159,6 +160,8 @@ export function App() {
               Enter a highlighted income above zero to see results.
             </p>
           )}
+
+          <Charts rows={range.rows} />
 
           <ResultsTable rows={range.rows} highlightIncome={inputs.highlightIncome} />
         </>
