@@ -13,8 +13,23 @@
 
 import type { BracketTable, Sourced } from '../../engine/types.ts';
 
-/** Provinces and territories the model supports. */
-export type ProvinceCode = 'AB' | 'BC' | 'ON';
+/** Provinces and territories the model supports. Quebec is deliberately absent. */
+export type ProvinceCode =
+  'AB' | 'BC' | 'MB' | 'NB' | 'NL' | 'NS' | 'NT' | 'NU' | 'ON' | 'PE' | 'SK' | 'YT';
+
+/**
+ * An income-tested basic personal amount.
+ *
+ * Manitoba tapers its amount to nothing between 200,000 and 400,000. Yukon
+ * mirrors the federal amount, which tapers to a floor rather than to zero.
+ * Every other jurisdiction has a flat amount and omits this.
+ */
+export interface BasicPersonalAmountPhaseOut {
+  /** Amount remaining at and above the end of the taper. */
+  readonly minimum: Sourced<number>;
+  readonly start: Sourced<number>;
+  readonly end: Sourced<number>;
+}
 
 /**
  * A low-income tax reduction. Two provinces have one, and they differ.
@@ -65,7 +80,10 @@ export interface ProvincialParameters {
    * rate, read from the bracket table rather than stored separately.
    */
   readonly creditRate: Sourced<number>;
+  /** The flat amount, or the maximum where the amount is income-tested. */
   readonly basicPersonalAmount: Sourced<number>;
+  /** Present only where the basic personal amount is income-tested. */
+  readonly basicPersonalAmountPhaseOut?: BasicPersonalAmountPhaseOut;
   /** Absent for provinces that have no low-income tax reduction. */
   readonly taxReduction?: TaxReduction;
   /** Ontario only: a surtax charged on provincial tax already payable. */

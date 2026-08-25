@@ -55,6 +55,35 @@ export interface ProvincialTaxBreakdown {
   readonly taxPayable: number;
 }
 
+/**
+ * The basic personal amount at a given income.
+ *
+ * Flat for most jurisdictions. Manitoba tapers its amount to nothing between
+ * 200,000 and 400,000, and Yukon mirrors the federal taper down to a floor.
+ */
+export function provincialBasicPersonalAmount(
+  income: number,
+  parameters: ProvincialParameters,
+): number {
+  const maximum = parameters.basicPersonalAmount.value;
+  const taper = parameters.basicPersonalAmountPhaseOut;
+  if (!taper) {
+    return maximum;
+  }
+
+  const start = taper.start.value;
+  const end = taper.end.value;
+  const minimum = taper.minimum.value;
+
+  if (income <= start) {
+    return maximum;
+  }
+  if (income >= end) {
+    return minimum;
+  }
+  return minimum + (maximum - minimum) * ((end - income) / (end - start));
+}
+
 /** Surtax charged on provincial tax already payable. Tiers stack. */
 export function surtaxOn(tax: number, tiers: readonly SurtaxTier[]): number {
   return tiers.reduce(
@@ -112,7 +141,7 @@ export function computeProvincialTax(
   const taxableIncome = clampToZero(input.taxableIncome);
   const taxBeforeCredits = taxFromBrackets(taxableIncome, parameters.brackets.value);
 
-  const bpa = parameters.basicPersonalAmount.value;
+  const bpa = provincialBasicPersonalAmount(taxableIncome, parameters);
   const additional = clampToZero(input.additionalCreditAmounts ?? 0);
 
   const totalCreditAmounts = bpa + additional;

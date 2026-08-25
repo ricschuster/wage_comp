@@ -60,9 +60,13 @@ narrows again at the top as Austria's social insurance ceilings bind.
 ## Scope
 
 Single taxpayer, no dependants, employment income only, no voluntary
-deductions. Tax year 2026. British Columbia; other provinces are added as
-parameter files. Quebec needs its own module (QPP, QPIP, federal abatement) and
-is absent rather than approximated.
+deductions. Tax year 2026. All twelve jurisdictions outside Quebec; Quebec
+needs its own module (QPP, QPIP, federal abatement) and is absent rather than
+approximated.
+
+Province choice matters more than the conversion basis does. At $300,000 the
+ratio runs from **0.906 in Nunavut to 1.048 in Nova Scotia**: Austria is behind
+in the territories and ahead in most of Atlantic Canada.
 
 This is not tax advice and not a filing tool. The in-app methodology page
 states what is modelled, what is not, and what the ratio does not tell you.

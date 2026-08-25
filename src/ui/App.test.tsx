@@ -1,7 +1,8 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { App } from './App.tsx';
+import { SUPPORTED_PROVINCES } from '../data/provinces/index.ts';
 
 // The app syncs its state to the address bar and reads it back on mount, so
 // each test starts from a clean URL rather than inheriting the previous one.
@@ -9,7 +10,21 @@ beforeEach(() => {
   window.history.replaceState(null, '', window.location.pathname);
 });
 
-/** Renders the app into a detached container and returns it. */
+// A test that fails part way never reaches its own unmount, and the root it
+// leaves mounted makes every later test in the file fail too, burying the one
+// real failure. Unmount here instead.
+const mounted: { root: Root; container: HTMLElement }[] = [];
+
+afterEach(() => {
+  while (mounted.length > 0) {
+    const entry = mounted.pop();
+    if (!entry) continue;
+    act(() => entry.root.unmount());
+    entry.container.remove();
+  }
+});
+
+/** Renders the app into a fresh container, cleaned up automatically. */
 function render(): { container: HTMLElement; root: Root } {
   const container = document.createElement('div');
   document.body.appendChild(container);
@@ -17,6 +32,7 @@ function render(): { container: HTMLElement; root: Root } {
   act(() => {
     root.render(<App />);
   });
+  mounted.push({ root, container });
   return { container, root };
 }
 
@@ -51,12 +67,15 @@ describe('App', () => {
     act(() => root.unmount());
   });
 
-  it('offers only the supported provinces', () => {
+  it('offers exactly the supported provinces', () => {
     const { container, root } = render();
     const select = container.querySelector<HTMLSelectElement>('#province');
     expect(select).not.toBeNull();
-    const names = [...(select?.options ?? [])].map((option) => option.textContent);
-    expect(names).toEqual(['Alberta', 'British Columbia', 'Ontario']);
+    // Compared against the lookup rather than a hardcoded list, so adding a
+    // province does not break this test.
+    const codes = [...(select?.options ?? [])].map((option) => option.value);
+    expect(codes).toEqual(SUPPORTED_PROVINCES);
+    expect(codes).not.toContain('QC');
     act(() => root.unmount());
   });
 
