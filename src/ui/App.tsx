@@ -15,8 +15,11 @@ import { CANADA_PAYROLL_2026 } from '../data/canada-payroll-2026.ts';
 import { CONVERSION_2026 } from '../data/conversion-2026.ts';
 import { getProvince } from '../data/provinces/index.ts';
 import { Controls, type DashboardInputs } from './Controls.tsx';
+import { Methodology } from './Methodology.tsx';
 import { ResultsTable } from './ResultsTable.tsx';
 import { SummaryCards } from './SummaryCards.tsx';
+
+type View = 'dashboard' | 'methodology';
 
 const DEFAULT_INPUTS: DashboardInputs = {
   province: 'BC',
@@ -31,6 +34,7 @@ const DEFAULT_INPUTS: DashboardInputs = {
 
 export function App() {
   const [inputs, setInputs] = useState<DashboardInputs>(DEFAULT_INPUTS);
+  const [view, setView] = useState<View>('dashboard');
 
   const parameters = useMemo<ComparisonParameters>(
     () => ({
@@ -116,29 +120,60 @@ export function App() {
           After-tax purchasing power, not nominal salary. Tax year 2026, single
           taxpayer, no dependants, employment income only.
         </p>
+        <nav className="views" aria-label="Views">
+          <button
+            type="button"
+            aria-current={view === 'dashboard' ? 'page' : undefined}
+            className={view === 'dashboard' ? 'view-tab view-tab--active' : 'view-tab'}
+            onClick={() => setView('dashboard')}
+          >
+            Dashboard
+          </button>
+          <button
+            type="button"
+            aria-current={view === 'methodology' ? 'page' : undefined}
+            className={
+              view === 'methodology' ? 'view-tab view-tab--active' : 'view-tab'
+            }
+            onClick={() => setView('methodology')}
+          >
+            Methodology
+          </button>
+        </nav>
       </header>
 
-      <Controls inputs={inputs} onChange={setInputs} rangeError={range.error} />
-
-      {highlight ? (
-        <SummaryCards
-          result={highlight}
-          equivalence={equivalence.result}
-          equivalenceError={equivalence.error}
-        />
+      {view === 'methodology' ? (
+        <Methodology />
       ) : (
-        <p className="error" role="alert">
-          Enter a highlighted income above zero to see results.
-        </p>
-      )}
+        <>
+          <Controls inputs={inputs} onChange={setInputs} rangeError={range.error} />
 
-      <ResultsTable rows={range.rows} highlightIncome={inputs.highlightIncome} />
+          {highlight ? (
+            <SummaryCards
+              result={highlight}
+              equivalence={equivalence.result}
+              equivalenceError={equivalence.error}
+            />
+          ) : (
+            <p className="error" role="alert">
+              Enter a highlighted income above zero to see results.
+            </p>
+          )}
+
+          <ResultsTable rows={range.rows} highlightIncome={inputs.highlightIncome} />
+        </>
+      )}
 
       <footer>
         <p>
-          Not tax advice. Every parameter is sourced and cited in the{' '}
-          <a href="https://github.com/ricschuster/wage_comp">repository</a>. Charts, the
-          audit view and the methodology page are still to come.
+          Not tax advice. Read the{' '}
+          <button type="button" className="link" onClick={() => setView('methodology')}>
+            methodology
+          </button>{' '}
+          for what is and is not modelled, and what the ratio does not tell you. Every
+          parameter is sourced and cited in the{' '}
+          <a href="https://github.com/ricschuster/wage_comp">repository</a>. Charts and
+          the audit view are still to come.
         </p>
       </footer>
     </main>
