@@ -23,9 +23,12 @@ See `docs/design/00_project_brief.md` for the full brief.
 
 ## Project status
 
-Early build. M0 (harness) is in place. Next is M1, which lands one jurisdiction
-slice per PR, each carrying its parameters, its engine module, and golden tests
-verified against an official calculator. Open GitHub issues are the live
+MVP shipped and live at https://ricschuster.github.io/wage_comp/.
+
+M0 through M5 are done: the harness, the engine for both countries with sourced
+and tested parameters, the comparison layer, the equivalence solver, the
+dashboard, three charts, the audit view, the methodology page, and the
+assumptions and sharing panel. Open GitHub issues are the live
 roadmap.
 
 ## Scope
