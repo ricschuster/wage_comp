@@ -39,6 +39,10 @@ export interface CanadaResult {
   readonly taxableIncome: number;
   readonly payroll: PayrollBreakdown;
   readonly federal: FederalTaxBreakdown;
+  /** Quebec abatement of federal tax, zero elsewhere. */
+  readonly federalAbatement: number;
+  /** Federal tax actually payable, after any abatement. */
+  readonly federalTaxAfterAbatement: number;
   readonly provincial: ProvincialTaxBreakdown;
   readonly totalTax: number;
   /** Tax plus contributions. */
@@ -68,11 +72,22 @@ export function computeCanada(
   );
 
   const provincial = computeProvincialTax(
-    { taxableIncome, additionalCreditAmounts: payroll.creditableAmount },
+    {
+      taxableIncome,
+      employmentIncome: gross,
+      additionalCreditAmounts: payroll.creditableAmount,
+    },
     parameters.province,
   );
 
-  const totalTax = federal.taxPayable + provincial.taxPayable;
+  // A Quebec resident's federal tax is reduced by the abatement, because
+  // Quebec runs programs the federal government runs elsewhere. Omitting it
+  // would overstate their total tax substantially.
+  const abatementRate = parameters.province.federalAbatementRate?.value ?? 0;
+  const federalAbatement = federal.taxPayable * abatementRate;
+  const federalTaxAfterAbatement = federal.taxPayable - federalAbatement;
+
+  const totalTax = federalTaxAfterAbatement + provincial.taxPayable;
   const totalDeductions = totalTax + payroll.totalContributions;
 
   return {
@@ -80,6 +95,8 @@ export function computeCanada(
     taxableIncome: roundToCents(taxableIncome),
     payroll,
     federal,
+    federalAbatement: roundToCents(federalAbatement),
+    federalTaxAfterAbatement: roundToCents(federalTaxAfterAbatement),
     provincial,
     totalTax: roundToCents(totalTax),
     totalDeductions: roundToCents(totalDeductions),

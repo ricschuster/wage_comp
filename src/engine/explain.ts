@@ -99,6 +99,20 @@ export function explainCanada(
           canada.payroll.eiPremium,
           [pay.ei.maximumInsurableEarnings, pay.ei.rate, pay.ei.maximumPremium],
         ),
+        ...(pay.qpip
+          ? [
+              entry(
+                'QPIP',
+                `min(${n(canada.grossIncome)}, ${n(pay.qpip.maximumInsurableEarnings.value)}) × ${pct(pay.qpip.rate.value)}, capped at ${n(pay.qpip.maximumPremium.value)} = ${n(canada.payroll.qpipPremium)}. Quebec only; it is why the EI rate here is lower.`,
+                canada.payroll.qpipPremium,
+                [
+                  pay.qpip.maximumInsurableEarnings,
+                  pay.qpip.rate,
+                  pay.qpip.maximumPremium,
+                ],
+              ),
+            ]
+          : []),
         entry(
           'Deducted from income',
           `CPP × ${pct(pay.cpp.firstAdditionalRate.value)}/${pct(pay.cpp.rate.value)} + CPP2 = ${n(canada.payroll.deductibleAmount)}`,
@@ -145,15 +159,41 @@ export function explainCanada(
           canada.federal.taxPayable,
           [fed.creditRate],
         ),
+        ...(prov.federalAbatementRate
+          ? [
+              entry(
+                'Quebec abatement',
+                `federal tax reduced by ${pct(prov.federalAbatementRate.value)} because Quebec runs programs the federal government runs elsewhere: ${n(canada.federal.taxPayable)} − ${n(canada.federalAbatement)} = ${n(canada.federalTaxAfterAbatement)}`,
+                canada.federalTaxAfterAbatement,
+                [prov.federalAbatementRate],
+              ),
+            ]
+          : []),
       ],
     },
     {
       title: `Canada: ${prov.name} tax`,
       currency: 'CAD',
       entries: [
+        ...(prov.workerDeduction
+          ? [
+              entry(
+                'Deduction for workers',
+                `${pct(prov.workerDeduction.rate.value)} of employment income, capped at ${n(prov.workerDeduction.maximum.value)} = ${n(canada.provincial.workerDeduction)}. It replaces the contribution credits the rest of Canada grants.`,
+                canada.provincial.workerDeduction,
+                [prov.workerDeduction.rate, prov.workerDeduction.maximum],
+              ),
+              entry(
+                'Provincial taxable income',
+                `${n(canada.taxableIncome)} − ${n(canada.provincial.workerDeduction)} = ${n(canada.provincial.taxableIncome)}`,
+                canada.provincial.taxableIncome,
+                [],
+              ),
+            ]
+          : []),
         entry(
           'Tax before credits',
-          `${bandFormula(canada.taxableIncome, prov.brackets.value)} = ${n(canada.provincial.taxBeforeCredits)}`,
+          `${bandFormula(canada.provincial.taxableIncome, prov.brackets.value)} = ${n(canada.provincial.taxBeforeCredits)}`,
           canada.provincial.taxBeforeCredits,
           [prov.brackets],
         ),
@@ -223,7 +263,7 @@ export function explainCanada(
       entries: [
         entry(
           'Net income',
-          `${n(canada.grossIncome)} − ${n(canada.totalTax)} tax − ${n(canada.payroll.totalContributions)} contributions = ${n(canada.netIncome)}`,
+          `${n(canada.grossIncome)} − ${n(canada.federalTaxAfterAbatement)} federal − ${n(canada.provincial.taxPayable)} provincial − ${n(canada.payroll.totalContributions)} contributions = ${n(canada.netIncome)}`,
           canada.netIncome,
           [],
         ),

@@ -75,7 +75,7 @@ describe('App', () => {
     // province does not break this test.
     const codes = [...(select?.options ?? [])].map((option) => option.value);
     expect(codes).toEqual(SUPPORTED_PROVINCES);
-    expect(codes).not.toContain('QC');
+    expect(codes).toContain('QC');
     act(() => root.unmount());
   });
 

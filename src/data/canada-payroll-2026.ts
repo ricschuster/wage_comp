@@ -54,10 +54,23 @@ export interface EiParameters {
   readonly maximumPremium: Sourced<number>;
 }
 
+/**
+ * Quebec parental insurance plan. No equivalent exists elsewhere in Canada,
+ * so this is absent outside Quebec.
+ */
+export interface QpipParameters {
+  readonly maximumInsurableEarnings: Sourced<number>;
+  readonly rate: Sourced<number>;
+  readonly maximumPremium: Sourced<number>;
+}
+
 export interface PayrollParameters {
+  /** CPP outside Quebec, QPP inside it. Same shape, different rates. */
   readonly cpp: CppParameters;
   readonly cpp2: Cpp2Parameters;
   readonly ei: EiParameters;
+  /** Quebec only. */
+  readonly qpip?: QpipParameters;
 }
 
 export const CANADA_PAYROLL_2026: PayrollParameters = {

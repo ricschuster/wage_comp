@@ -30,6 +30,11 @@ import type {
 export interface ProvincialTaxInput {
   readonly taxableIncome: number;
   /**
+   * Gross employment income, needed only by Quebec, whose deduction for
+   * workers is a share of it rather than of taxable income.
+   */
+  readonly employmentIncome?: number;
+  /**
    * Credit amounts from the payroll slice: the CPP base portion plus EI. The
    * provincial credit uses the same amounts as the federal one, at the lowest
    * provincial rate. T4127 formula K2P.
@@ -38,7 +43,10 @@ export interface ProvincialTaxInput {
 }
 
 export interface ProvincialTaxBreakdown {
+  /** Taxable income after any province-specific deduction. */
   readonly taxableIncome: number;
+  /** Quebec's deduction for workers, zero elsewhere. */
+  readonly workerDeduction: number;
   readonly taxBeforeCredits: number;
   readonly basicPersonalAmount: number;
   readonly additionalCreditAmounts: number;
@@ -138,11 +146,25 @@ export function computeProvincialTax(
   input: ProvincialTaxInput,
   parameters: ProvincialParameters,
 ): ProvincialTaxBreakdown {
-  const taxableIncome = clampToZero(input.taxableIncome);
+  // Quebec deducts a share of employment income before applying its brackets.
+  const workerDeduction = parameters.workerDeduction
+    ? capAt(
+        clampToZero(input.employmentIncome ?? 0) *
+          parameters.workerDeduction.rate.value,
+        parameters.workerDeduction.maximum.value,
+      )
+    : 0;
+
+  const taxableIncome = clampToZero(input.taxableIncome - workerDeduction);
   const taxBeforeCredits = taxFromBrackets(taxableIncome, parameters.brackets.value);
 
   const bpa = provincialBasicPersonalAmount(taxableIncome, parameters);
-  const additional = clampToZero(input.additionalCreditAmounts ?? 0);
+  // Quebec replaced its contribution credits with the deduction for workers,
+  // so granting both would double count the relief.
+  const grantsContributionCredits = parameters.grantsContributionCredits ?? true;
+  const additional = grantsContributionCredits
+    ? clampToZero(input.additionalCreditAmounts ?? 0)
+    : 0;
 
   const totalCreditAmounts = bpa + additional;
   const creditValue = totalCreditAmounts * parameters.creditRate.value;
@@ -165,7 +187,8 @@ export function computeProvincialTax(
     : 0;
 
   return {
-    taxableIncome,
+    taxableIncome: roundToCents(taxableIncome),
+    workerDeduction: roundToCents(workerDeduction),
     taxBeforeCredits: roundToCents(taxBeforeCredits),
     basicPersonalAmount: roundToCents(bpa),
     additionalCreditAmounts: roundToCents(additional),

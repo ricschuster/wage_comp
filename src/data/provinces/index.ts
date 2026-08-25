@@ -26,6 +26,7 @@ import {
   NUNAVUT_2026,
   SASKATCHEWAN_2026,
 } from './prairies-north-2026.ts';
+import { QUEBEC_2026 } from './qc-2026.ts';
 import { YUKON_2026 } from './yt-2026.ts';
 import type { ProvinceCode, ProvincialParameters } from './types.ts';
 
@@ -36,6 +37,7 @@ export type {
   ProvincialParameters,
   SurtaxTier,
   TaxReduction,
+  WorkerDeduction,
 } from './types.ts';
 
 /** Ordered west to east, then the territories, as Canadians usually list them. */
@@ -45,6 +47,7 @@ const PROVINCES_2026: Readonly<Record<ProvinceCode, ProvincialParameters>> = {
   SK: SASKATCHEWAN_2026,
   MB: MANITOBA_2026,
   ON: ONTARIO_2026,
+  QC: QUEBEC_2026,
   NB: NEW_BRUNSWICK_2026,
   NS: NOVA_SCOTIA_2026,
   PE: PRINCE_EDWARD_ISLAND_2026,

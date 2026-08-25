@@ -44,8 +44,8 @@ export function Controls({ inputs, onChange, rangeError }: ControlsProps) {
           ))}
         </select>
         <p className="hint">
-          All jurisdictions except Quebec, which needs its own module and is absent
-          rather than approximated.
+          All thirteen jurisdictions. Quebec is modelled properly, with QPP, QPIP, the
+          federal abatement and the deduction for workers.
         </p>
       </div>
 

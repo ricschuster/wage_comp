@@ -15,7 +15,31 @@ import type { BracketTable, Sourced } from '../../engine/types.ts';
 
 /** Provinces and territories the model supports. Quebec is deliberately absent. */
 export type ProvinceCode =
-  'AB' | 'BC' | 'MB' | 'NB' | 'NL' | 'NS' | 'NT' | 'NU' | 'ON' | 'PE' | 'SK' | 'YT';
+  | 'AB'
+  | 'BC'
+  | 'MB'
+  | 'NB'
+  | 'NL'
+  | 'NS'
+  | 'NT'
+  | 'NU'
+  | 'ON'
+  | 'PE'
+  | 'QC'
+  | 'SK'
+  | 'YT';
+
+/**
+ * Quebec's deduction for workers.
+ *
+ * A percentage of employment income, capped, deducted from Quebec taxable
+ * income. It replaces the contribution credits the rest of Canada grants,
+ * which is why Revenu Québec's formula has no QPP, EI or QPIP credit term.
+ */
+export interface WorkerDeduction {
+  readonly rate: Sourced<number>;
+  readonly maximum: Sourced<number>;
+}
 
 /**
  * An income-tested basic personal amount.
@@ -95,4 +119,22 @@ export interface ProvincialParameters {
    * applied rather than being reduced by it.
    */
   readonly healthPremium?: Sourced<readonly HealthPremiumBand[]>;
+  /** Quebec only: a deduction from provincial taxable income. */
+  readonly workerDeduction?: WorkerDeduction;
+  /**
+   * Whether the province grants a credit for payroll contributions.
+   *
+   * Every province does except Quebec, which replaced those credits with the
+   * deduction for workers. Granting both would double count the relief, so
+   * this defaults to true and Quebec sets it false.
+   */
+  readonly grantsContributionCredits?: boolean;
+  /**
+   * Quebec only: the share by which a resident's FEDERAL tax is reduced.
+   *
+   * Quebec runs programs the federal government runs elsewhere, and the
+   * abatement compensates for it. Omitting it would overstate a Quebec
+   * resident's total tax substantially.
+   */
+  readonly federalAbatementRate?: Sourced<number>;
 }
