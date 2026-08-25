@@ -408,6 +408,85 @@ footer {
   }
 }
 
+/* Employer cost */
+
+.employer {
+  margin: 0 0 1.5rem;
+  padding: 0.75rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.employer summary {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.employer-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1.25rem;
+  margin: 1rem 0;
+}
+
+.employer-columns h4 {
+  margin: 0 0 0.3rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.employer-columns .figure {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.employer-columns .sub {
+  margin: 0.2rem 0 0.6rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.employer-columns dl {
+  margin: 0;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.employer-columns dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.employer-columns dl > div:last-child {
+  border-bottom: none;
+}
+
+.employer-columns dt {
+  color: var(--text-muted);
+}
+
+.employer-columns dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.employer .note {
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.85rem;
+  background: var(--bg);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+}
+
 /* Audit view */
 
 .audit {

@@ -61,11 +61,19 @@ describe('every model parameter is citable', () => {
 
   it('draws only on official and multilateral sources', () => {
     const allowed = [
+      // Canada
       'canada.ca',
       'gov.bc.ca',
+      'revenuquebec.ca',
+      'quebec.ca',
+      // Austria. WKO is a statutory chamber, and it sets the levy surcharge
+      // itself; usp.gv.at is the government business service portal.
       'bmf.gv.at',
       'sozialversicherung.at',
       'ris.bka.gv.at',
+      'wko.at',
+      'usp.gv.at',
+      // Multilateral
       'ecb.europa.eu',
       'worldbank.org',
     ];

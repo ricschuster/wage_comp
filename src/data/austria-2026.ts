@@ -1,8 +1,8 @@
 /**
  * Austrian income tax and social insurance parameters, tax year 2026.
  *
- * Rates are the employee share (Dienstnehmeranteil) for Angestellte. The
- * employer share is not modelled: see issue on employer-side total cost.
+ * Rates are the employee share (Dienstnehmeranteil) for Angestellte, except in
+ * the `employer` block, which carries the employer side.
  */
 
 import type { BracketTable, Sourced } from '../engine/types.ts';
@@ -26,6 +26,17 @@ const RIS_ESTG_33 =
   'https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10004570&Paragraf=33';
 const RIS_ESTG_67 =
   'https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10004570&Paragraf=67';
+
+/** WKO, "Dienstgeberbeitrag zum Familienlastenausgleichsfonds". */
+const WKO_DB =
+  'https://www.wko.at/lohnverrechnung/dienstgeberbeitrag-familienlastenausgleichsfonds';
+
+/** WKO, "Zuschlag zum Dienstgeberbeitrag". */
+const WKO_DZ = 'https://www.wko.at/lohnverrechnung/zuschlag-dienstgeberbeitrag';
+
+/** Unternehmensserviceportal, "Bemessungsgrundlage und Steuersatz der Kommunalsteuer". */
+const USP_KOMMST =
+  'https://www.usp.gv.at/themen/steuern-finanzen/kommunalsteuer/bemessungsgrundlage-und-steuersatz-der-kommunalsteuer.html';
 
 const RETRIEVED = '2026-08-24';
 
@@ -90,6 +101,33 @@ export interface AustrianParameters {
   readonly specialPaymentExemptionLimit: Sourced<number>;
   /** Annual ceiling for social insurance on special payments. */
   readonly specialPaymentInsuranceCeiling: Sourced<number>;
+
+  readonly employer: AustrianEmployerParameters;
+}
+
+/**
+ * Employer-side costs in Austria.
+ *
+ * Two groups, and the difference between them matters:
+ *
+ * - Social insurance, which is capped by the same Höchstbeitragsgrundlage as
+ *   the employee side.
+ * - The wage levies (DB, DZ, Kommunalsteuer) and the pension-fund
+ *   contribution, which are **uncapped**. They keep accruing on every euro,
+ *   which is why Austrian employer cost keeps rising at high salaries where
+ *   the Canadian employer cost has long since plateaued.
+ */
+export interface AustrianEmployerParameters {
+  /** Total employer social insurance rate, subject to the ceiling. */
+  readonly socialInsuranceRate: Sourced<number>;
+  /** Company pension contribution (Betriebliche Vorsorge). Uncapped. */
+  readonly pensionFundRate: Sourced<number>;
+  /** Family burden equalisation levy (Dienstgeberbeitrag). Uncapped. */
+  readonly familyFundRate: Sourced<number>;
+  /** Surcharge to the above (Zuschlag zum DB). Varies by state. Uncapped. */
+  readonly familyFundSurchargeRate: Sourced<number>;
+  /** Municipal payroll tax (Kommunalsteuer). Uncapped. */
+  readonly municipalTaxRate: Sourced<number>;
 }
 
 export const AUSTRIA_2026: AustrianParameters = {
@@ -246,5 +284,38 @@ export const AUSTRIA_2026: AustrianParameters = {
     source: SV_WERTE,
     retrieved: RETRIEVED,
     note: 'Annual Höchstbeitragsgrundlage for special payments, separate from the monthly ceiling on regular pay.',
+  },
+
+  employer: {
+    socialInsuranceRate: {
+      value: 0.2098,
+      source: SV_WERTE,
+      retrieved: RETRIEVED,
+      note: 'Angestellte employer share: health 3.78, accident 1.10, pension 12.55, unemployment 2.95, insolvency 0.10, housing 0.50.',
+    },
+    pensionFundRate: {
+      value: 0.0153,
+      source: SV_WERTE,
+      retrieved: RETRIEVED,
+      note: 'Betriebliche Vorsorge. Neither the minimum-earnings threshold nor the contribution ceiling applies, so it is uncapped.',
+    },
+    familyFundRate: {
+      value: 0.037,
+      source: WKO_DB,
+      retrieved: RETRIEVED,
+      note: 'Dienstgeberbeitrag, 3.7% from 2025. Uncapped.',
+    },
+    familyFundSurchargeRate: {
+      value: 0.0036,
+      source: WKO_DZ,
+      retrieved: RETRIEVED,
+      note: 'Zuschlag zum Dienstgeberbeitrag for Vienna in 2026. It varies by state, from 0.31% in Upper Austria to 0.40% in Burgenland.',
+    },
+    municipalTaxRate: {
+      value: 0.03,
+      source: USP_KOMMST,
+      retrieved: RETRIEVED,
+      note: 'Kommunalsteuer, uniform across Austria. A monthly allowance of 1,095 applies below a 1,460 threshold and is not modelled.',
+    },
   },
 };

@@ -21,6 +21,11 @@
 
 import { computeAustria, type AustriaOptions, type AustriaResult } from './austria.ts';
 import { computeCanada, type CanadaParameters, type CanadaResult } from './canada.ts';
+import {
+  austriaEmployerCost,
+  canadaEmployerCost,
+  type EmployerCost,
+} from './employer.ts';
 import { roundToCents } from './money.ts';
 import type { AustrianParameters } from '../data/austria-2026.ts';
 import type {
@@ -81,6 +86,11 @@ export interface ComparisonResult {
   readonly ratio: number;
   readonly canadaEffectiveRate: number;
   readonly austriaEffectiveRate: number;
+  /** What the job costs the employer, not what the employee receives. */
+  readonly canadaEmployer: EmployerCost;
+  readonly austriaEmployer: EmployerCost;
+  /** Austrian employer cost converted to Canadian dollars. */
+  readonly austriaEmployerCostCommon: number;
   readonly trace: readonly TraceEntry[];
 }
 
@@ -127,6 +137,11 @@ export function compare(
   const canada = computeCanada(grossIncomeCad, parameters.canada);
   const austriaOptions: AustriaOptions = { specialPayments: options.specialPayments };
   const austria = computeAustria(grossIncomeEur, parameters.austria, austriaOptions);
+
+  const canadaEmployer = canadaEmployerCost(grossIncomeCad, parameters.canada.payroll);
+  const austriaEmployer = austriaEmployerCost(grossIncomeEur, parameters.austria, {
+    specialPayments: options.specialPayments,
+  });
 
   const canadaNetCommon = canada.netIncome;
   const austriaNetCommon = austria.netIncome * rate;
@@ -181,6 +196,9 @@ export function compare(
     ratio,
     canadaEffectiveRate: canada.effectiveDeductionRate,
     austriaEffectiveRate: austria.effectiveDeductionRate,
+    canadaEmployer,
+    austriaEmployer,
+    austriaEmployerCostCommon: roundToCents(austriaEmployer.totalCost * rate),
     trace,
   };
 }
