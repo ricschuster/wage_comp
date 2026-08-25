@@ -273,6 +273,105 @@ footer {
   color: var(--text-muted);
 }
 
+/* Charts */
+
+.charts {
+  margin: 2rem 0;
+}
+
+.charts h2 {
+  font-size: 1.15rem;
+  margin: 0 0 1rem;
+}
+
+.chart {
+  margin: 0 0 2rem;
+  padding: 1rem 1.1rem 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.chart figcaption h3 {
+  margin: 0 0 0.2rem;
+  font-size: 0.95rem;
+}
+
+.chart figcaption .hint {
+  margin: 0 0 0.5rem;
+}
+
+/* Wide charts scroll inside their own box, never the page. */
+.chart-scroll {
+  overflow-x: auto;
+}
+
+.chart svg {
+  display: block;
+  width: 100%;
+  min-width: 26rem;
+  height: auto;
+}
+
+.chart .grid {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.chart .axis {
+  stroke: var(--text-muted);
+  stroke-width: 1;
+}
+
+.chart .tick {
+  fill: var(--text-muted);
+  font-size: 11px;
+}
+
+.chart .series {
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.chart .reference {
+  stroke: var(--text-muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 3;
+}
+
+.chart .reference-label {
+  fill: var(--text-muted);
+  font-size: 11px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend .swatch {
+  width: 24px;
+  height: 8px;
+  flex: none;
+}
+
+.legend .swatch line {
+  stroke-width: 2.5;
+}
+
 /* View tabs */
 
 .views {
