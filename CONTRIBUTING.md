@@ -23,6 +23,12 @@ The workflow is:
 - Node version is pinned in `.nvmrc`.
 - `npm ci` to install, `npm run dev` to run locally.
 
+## The annual refresh
+
+For the yearly parameter update, follow `docs/ANNUAL_UPDATE.md`. It lists when
+each source publishes, the two tooling traps that will otherwise cost you an
+hour, the verification steps, and the changes already known to be coming.
+
 ## Adding or changing a tax parameter
 
 1. Parameters live in `src/data/`, keyed by tax year. Never inline a tax value

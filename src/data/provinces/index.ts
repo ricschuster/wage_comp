@@ -41,7 +41,7 @@ export type {
 } from './types.ts';
 
 /** Ordered west to east, then the territories, as Canadians usually list them. */
-const PROVINCES_2026: Readonly<Record<ProvinceCode, ProvincialParameters>> = {
+export const PROVINCES_2026: Readonly<Record<ProvinceCode, ProvincialParameters>> = {
   BC: BRITISH_COLUMBIA_2026,
   AB: ALBERTA_2026,
   SK: SASKATCHEWAN_2026,

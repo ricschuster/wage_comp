@@ -104,6 +104,11 @@ Already in place:
    own.
 4. When a parameter cannot be verified, document the gap in the methodology
    rather than shipping a plausible guess.
+5. Check one full result by hand after any parameter change. Every test can
+   pass and the answer still be wrong, because the tests and the code can share
+   an assumption. That is how the Quebec contribution-credit bug survived.
+6. The yearly refresh follows `docs/ANNUAL_UPDATE.md`. Adding a year should be
+   a data change only; if it needs an engine change, the abstraction leaked.
 
 ## Style rules
 
