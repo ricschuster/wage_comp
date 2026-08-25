@@ -4,6 +4,10 @@ Each milestone is a set of PRs. Slices are vertical: a jurisdiction's
 parameters, its engine module, and its golden tests land together, because a
 parameter table with no test attached proves nothing.
 
+> Status: M0 through M5 are complete and the MVP is live at
+> https://ricschuster.github.io/wage_comp/. Remaining work is the post-MVP
+> backlog below, tracked as GitHub issues.
+
 ## M0. Harness
 
 Repo scaffolding adapted from SHI_example: build tooling, CI, Pages deploy,
