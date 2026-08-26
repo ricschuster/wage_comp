@@ -1,5 +1,5 @@
 import {
-  ASSUMPTIONS,
+  assumptionsForYear,
   isWithinGuardrails,
   modifiedKeys,
   type AssumptionKey,
@@ -14,6 +14,8 @@ export interface AssumptionsPanelProps {
   readonly shareLink: string;
   readonly onCopy: () => void;
   readonly copied: boolean;
+  /** Which year's sourced defaults to show and compare against. */
+  readonly taxYear: number;
 }
 
 export function AssumptionsPanel({
@@ -23,8 +25,10 @@ export function AssumptionsPanel({
   shareLink,
   onCopy,
   copied,
+  taxYear,
 }: AssumptionsPanelProps) {
-  const modified = new Set<AssumptionKey>(modifiedKeys(overrides));
+  const specs = assumptionsForYear(taxYear);
+  const modified = new Set<AssumptionKey>(modifiedKeys(overrides, taxYear));
 
   const setValue = (key: AssumptionKey, raw: string): void => {
     const value = Number(raw);
@@ -75,10 +79,11 @@ export function AssumptionsPanel({
         <h4>Assumptions</h4>
         <p className="hint">
           Only the conversion factors are adjustable. Tax parameters are law, not
-          assumptions, so they are not editable here.
+          assumptions, so they are not editable here. The defaults shown are the sourced
+          values for {taxYear}.
         </p>
         <dl className="assumption-list">
-          {ASSUMPTIONS.map((spec) => {
+          {specs.map((spec) => {
             const current = overrides[spec.key] ?? spec.defaultValue;
             const isModified = modified.has(spec.key);
             return (

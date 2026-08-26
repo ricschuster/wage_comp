@@ -3,7 +3,7 @@ import { act } from 'react';
 import { App } from './App.tsx';
 import { Methodology } from './Methodology.tsx';
 import { render } from './test-render.ts';
-import { SOURCE_GROUPS } from '../data/source-groups.ts';
+import { SOURCE_GROUPS, sourceGroupsForYear } from '../data/source-groups.ts';
 import { collectAllSources } from '../data/sources.ts';
 import { SUPPORTED_PROVINCES, getProvince } from '../data/provinces/index.ts';
 
@@ -66,6 +66,41 @@ describe('Methodology', () => {
     expect(text).toMatch(/QPIP/);
     expect(text).toMatch(/abatement/i);
     expect(text).toMatch(/deduction for workers/i);
+  });
+
+  it('follows the tax year rather than restating one', () => {
+    const { container } = render(<Methodology taxYear={2025} />);
+    const text = container.textContent ?? '';
+
+    // 2025 figures, all read from the parameters rather than written in prose.
+    expect(text).toContain('for the 2025 tax year');
+    expect(text).toMatch(/lowest federal rate for 2025 is\s*14\.5%/);
+    expect(text).toMatch(/13,308 euro/);
+    // The PPP reference year trails the tax year in both directions.
+    expect(text).toMatch(/reference year is\s*2024/);
+  });
+
+  it('cites the sources for the year on screen, not the current one', () => {
+    const { container } = render(<Methodology taxYear={2025} />);
+    const expected = collectAllSources(sourceGroupsForYear(2025));
+    expect(container.querySelectorAll('tbody tr')).toHaveLength(expected.length);
+    expect(container.textContent).toContain(`sourced parameters for 2025`);
+  });
+
+  it('describes the Vienna housing levy only for the years it applies to', () => {
+    const later = render(<Methodology taxYear={2026} />);
+    expect(later.container.textContent).toMatch(/raised its housing levy to 1\.5%/);
+
+    const earlier = render(<Methodology taxYear={2025} />);
+    expect(earlier.container.textContent).not.toMatch(
+      /raised its housing levy to 1\.5%/,
+    );
+    expect(earlier.container.textContent).toMatch(/national rate of\s*0\.50% applied/);
+  });
+
+  it('warns that two years is not a trend', () => {
+    const { container } = render(<Methodology />);
+    expect(container.textContent).toMatch(/Two years is not a trend/);
   });
 
   it('cites every jurisdiction, not just a hardcoded few', () => {

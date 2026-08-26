@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { App } from './App.tsx';
 import { render, setValue } from './test-render.ts';
 import { SUPPORTED_PROVINCES } from '../data/provinces/index.ts';
+import { CURRENT_TAX_YEAR, TAX_YEARS } from '../data/years.ts';
 
 // The app syncs its state to the address bar and reads it back on mount, so
 // each test starts from a clean URL rather than inheriting the previous one.
@@ -89,6 +90,68 @@ describe('App', () => {
     const text = container.querySelector('.equivalence')?.textContent ?? '';
     expect(text).toMatch(/would need/);
     expect(text).toMatch(/€/);
+  });
+
+  it('offers exactly the tax years the registry knows', () => {
+    const { container } = render(<App />);
+    const select = container.querySelector<HTMLSelectElement>('#taxYear');
+    expect(select).not.toBeNull();
+    const years = [...(select?.options ?? [])].map((option) => Number(option.value));
+    expect(years).toEqual([...TAX_YEARS]);
+    expect(select?.value).toBe(String(CURRENT_TAX_YEAR));
+  });
+
+  it('names the selected tax year in the lede', () => {
+    const { container } = render(<App />);
+    expect(container.querySelector('.lede')?.textContent).toContain(
+      `Tax year ${CURRENT_TAX_YEAR}`,
+    );
+
+    setValue(container.querySelector<HTMLSelectElement>('#taxYear')!, '2025');
+    expect(container.querySelector('.lede')?.textContent).toContain('Tax year 2025');
+  });
+
+  it('recomputes everything when the tax year changes', () => {
+    const { container } = render(<App />);
+    const figures = () =>
+      [...container.querySelectorAll('.card .figure')].map((node) => node.textContent);
+    const before = figures();
+
+    setValue(container.querySelector<HTMLSelectElement>('#taxYear')!, '2025');
+
+    // Different brackets, different contribution ceilings and a different
+    // exchange rate: no headline figure should survive unchanged.
+    expect(figures()).not.toEqual(before);
+  });
+
+  it('leaves more take-home in 2026 than in 2025 at the same gross', () => {
+    // The federal rate cut from 14.5% to 14%, plus indexation, against a higher
+    // CPP ceiling. Checked against the engine in src/data/year-2025.test.ts;
+    // this is the same fact reaching the screen.
+    const { container } = render(<App />);
+    const canadaNet = () => container.querySelector('.card .figure')?.textContent ?? '';
+    const later = canadaNet();
+
+    setValue(container.querySelector<HTMLSelectElement>('#taxYear')!, '2025');
+    const earlier = canadaNet();
+
+    const toNumber = (text: string) => Number(text.replace(/[^0-9.]/g, ''));
+    expect(toNumber(later)).toBeGreaterThan(toNumber(earlier));
+  });
+
+  it('carries the tax year in the share link', () => {
+    const { container } = render(<App />);
+    setValue(container.querySelector<HTMLSelectElement>('#taxYear')!, '2025');
+    expect(
+      container.querySelector<HTMLInputElement>('.share-row input')?.value,
+    ).toMatch(/y=2025/);
+  });
+
+  it('restores the tax year from a shared link', () => {
+    window.history.replaceState(null, '', `${window.location.pathname}?y=2025`);
+    const { container } = render(<App />);
+    expect(container.querySelector<HTMLSelectElement>('#taxYear')?.value).toBe('2025');
+    expect(container.querySelector('.lede')?.textContent).toContain('Tax year 2025');
   });
 
   it('handles a zero highlighted income without crashing', () => {

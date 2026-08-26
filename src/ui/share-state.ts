@@ -12,12 +12,14 @@
 
 import {
   ASSUMPTIONS,
+  assumptionsForYear,
   isWithinGuardrails,
   type AssumptionKey,
   type AssumptionOverrides,
 } from '../data/assumptions.ts';
 import type { ComparisonBasis, PppBasis } from '../data/types.ts';
 import { SUPPORTED_PROVINCES, type ProvinceCode } from '../data/provinces/index.ts';
+import { CURRENT_TAX_YEAR, TAX_YEARS } from '../data/years.ts';
 import type { DashboardInputs } from './Controls.tsx';
 
 export interface ShareState {
@@ -26,6 +28,7 @@ export interface ShareState {
 }
 
 export const SHARE_DEFAULTS: DashboardInputs = {
+  taxYear: CURRENT_TAX_YEAR,
   province: 'BC',
   basis: 'ppp',
   pppBasis: 'household',
@@ -38,6 +41,7 @@ export const SHARE_DEFAULTS: DashboardInputs = {
 
 /** Short URL keys, so a shared link stays readable. */
 const KEYS = {
+  taxYear: 'y',
   province: 'p',
   basis: 'b',
   pppBasis: 'pb',
@@ -72,6 +76,9 @@ export function encodeShareState(state: ShareState): string {
   const params = new URLSearchParams();
   const { inputs, overrides } = state;
 
+  if (inputs.taxYear !== SHARE_DEFAULTS.taxYear) {
+    params.set(KEYS.taxYear, String(inputs.taxYear));
+  }
   if (inputs.province !== SHARE_DEFAULTS.province) {
     params.set(KEYS.province, inputs.province);
   }
@@ -97,7 +104,9 @@ export function encodeShareState(state: ShareState): string {
     params.set(KEYS.rangeIncrement, String(inputs.rangeIncrement));
   }
 
-  for (const spec of ASSUMPTIONS) {
+  // Compared against the chosen year's sourced defaults, since they differ by
+  // year. An exchange rate equal to 2026's default is a modification in 2025.
+  for (const spec of assumptionsForYear(inputs.taxYear)) {
     const value = overrides[spec.key];
     if (value !== undefined && value !== spec.defaultValue) {
       params.set(ASSUMPTION_PARAM[spec.key], String(value));
@@ -110,6 +119,11 @@ export function encodeShareState(state: ShareState): string {
 /** Decodes a query string, falling back to defaults field by field. */
 export function decodeShareState(query: string): ShareState {
   const params = new URLSearchParams(query);
+
+  // An unknown year is dropped rather than passed on: the registry would throw,
+  // and a link from a future version should still show a working page.
+  const rawYear = Number(params.get(KEYS.taxYear));
+  const taxYear = TAX_YEARS.includes(rawYear) ? rawYear : SHARE_DEFAULTS.taxYear;
 
   const rawProvince = params.get(KEYS.province);
   const province: ProvinceCode = SUPPORTED_PROVINCES.includes(
@@ -152,6 +166,7 @@ export function decodeShareState(query: string): ShareState {
 
   return {
     inputs: {
+      taxYear,
       province,
       basis,
       pppBasis,

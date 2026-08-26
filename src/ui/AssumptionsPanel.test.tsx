@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { act } from 'react';
 import { App } from './App.tsx';
 import { render, setValue } from './test-render.ts';
+import { CONVERSION_2025 } from '../data/conversion-2025.ts';
 import { CONVERSION_2026 } from '../data/conversion-2026.ts';
 import { SCENARIOS } from '../data/scenarios.ts';
 
@@ -149,6 +150,52 @@ describe('AssumptionsPanel', () => {
     expect(container.querySelector<HTMLSelectElement>('#province')?.value).toBe('BC');
     expect(container.querySelectorAll('.assumption .badge')).toHaveLength(0);
     expect(container.querySelector('.cards')).not.toBeNull();
+  });
+
+  it('shows the sourced default for the selected year', () => {
+    const { container } = render(<App />);
+    const field = () =>
+      container.querySelector<HTMLInputElement>('#assumption-exchangeRate')?.value;
+    expect(field()).toBe(String(CONVERSION_2026.exchangeRate.value));
+
+    setValue(container.querySelector<HTMLSelectElement>('#taxYear')!, '2025');
+
+    // The 2025 default, not the 2026 one, and nothing marked as modified: the
+    // reader changed the year, not the assumption.
+    expect(field()).toBe(String(CONVERSION_2025.exchangeRate.value));
+    expect(container.querySelectorAll('.assumption .badge')).toHaveLength(0);
+  });
+
+  it('keeps a deliberate override across a year change and still flags it', () => {
+    const { container } = render(<App />);
+    setValue(
+      container.querySelector<HTMLInputElement>('#assumption-exchangeRate')!,
+      '1.5',
+    );
+    expect(container.querySelectorAll('.assumption .badge').length).toBeGreaterThan(0);
+
+    setValue(container.querySelector<HTMLSelectElement>('#taxYear')!, '2025');
+
+    expect(
+      container.querySelector<HTMLInputElement>('#assumption-exchangeRate')?.value,
+    ).toBe('1.5');
+    expect(container.querySelectorAll('.assumption .badge').length).toBeGreaterThan(0);
+    // The reset offer names the new year's default, not the old one.
+    expect(container.querySelector('.assumption .link')?.textContent).toMatch(
+      String(CONVERSION_2025.exchangeRate.value),
+    );
+  });
+
+  it('treats a value as modified or not according to the year it is read in', () => {
+    // 1.6074 is sourced in 2026 and a modification in 2025. The badge has to
+    // tell the truth in both years, which is why the defaults are per year.
+    window.history.replaceState(
+      null,
+      '',
+      `${window.location.pathname}?y=2025&fx=${CONVERSION_2026.exchangeRate.value}`,
+    );
+    const { container } = render(<App />);
+    expect(container.querySelectorAll('.assumption .badge').length).toBeGreaterThan(0);
   });
 
   it('shows a share link that reflects the current state', () => {

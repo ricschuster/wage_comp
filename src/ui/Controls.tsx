@@ -1,8 +1,10 @@
 import type { ComparisonBasis, PppBasis } from '../data/types.ts';
 import { SUPPORTED_PROVINCES, getProvince } from '../data/provinces/index.ts';
 import type { ProvinceCode } from '../data/provinces/index.ts';
+import { TAX_YEARS, parametersForYear } from '../data/years.ts';
 
 export interface DashboardInputs {
+  readonly taxYear: number;
   readonly province: ProvinceCode;
   readonly basis: ComparisonBasis;
   readonly pppBasis: PppBasis;
@@ -30,6 +32,26 @@ export function Controls({ inputs, onChange, rangeError }: ControlsProps) {
 
   return (
     <section className="controls" aria-label="Comparison settings">
+      <div className="control-group">
+        <label htmlFor="taxYear">Tax year</label>
+        <select
+          id="taxYear"
+          value={inputs.taxYear}
+          onChange={(event) => set('taxYear', Number(event.target.value))}
+        >
+          {TAX_YEARS.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
+        <p className="hint">
+          Every rate, threshold and conversion factor changes with the year. The PPP
+          reference year for {inputs.taxYear} is{' '}
+          {parametersForYear(inputs.taxYear).conversion.householdPpp.referenceYear}.
+        </p>
+      </div>
+
       <div className="control-group">
         <label htmlFor="province">Province</label>
         <select
