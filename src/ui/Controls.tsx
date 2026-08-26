@@ -2,6 +2,7 @@ import type { ComparisonBasis, PppBasis } from '../data/types.ts';
 import { SUPPORTED_PROVINCES, getProvince } from '../data/provinces/index.ts';
 import type { ProvinceCode } from '../data/provinces/index.ts';
 import { TAX_YEARS, parametersForYear } from '../data/years.ts';
+import { InfoTip } from './InfoTip.tsx';
 
 export interface DashboardInputs {
   readonly taxYear: number;
@@ -34,6 +35,7 @@ export function Controls({ inputs, onChange, rangeError }: ControlsProps) {
     <section className="controls" aria-label="Comparison settings">
       <div className="control-group">
         <label htmlFor="taxYear">Tax year</label>
+        <InfoTip term="taxYear" />
         <select
           id="taxYear"
           value={inputs.taxYear}
@@ -54,6 +56,7 @@ export function Controls({ inputs, onChange, rangeError }: ControlsProps) {
 
       <div className="control-group">
         <label htmlFor="province">Province</label>
+        <InfoTip term="province" />
         <select
           id="province"
           value={inputs.province}
@@ -73,6 +76,7 @@ export function Controls({ inputs, onChange, rangeError }: ControlsProps) {
 
       <div className="control-group">
         <label htmlFor="basis">Compare on</label>
+        <InfoTip term="comparisonBasis" />
         <select
           id="basis"
           value={inputs.basis}
@@ -85,6 +89,7 @@ export function Controls({ inputs, onChange, rangeError }: ControlsProps) {
 
       <div className="control-group">
         <label htmlFor="pppBasis">PPP basis</label>
+        <InfoTip term="pppBasis" />
         <select
           id="pppBasis"
           value={inputs.pppBasis}
@@ -109,6 +114,8 @@ export function Controls({ inputs, onChange, rangeError }: ControlsProps) {
           />
           Austrian 13th and 14th salaries
         </label>
+        {/* Outside the label: inside it, clicking the tip would toggle the box. */}
+        <InfoTip term="specialPayments" />
         <p className="hint">
           On is the Austrian norm. Off shows what the regime is worth.
         </p>
@@ -116,6 +123,7 @@ export function Controls({ inputs, onChange, rangeError }: ControlsProps) {
 
       <div className="control-group">
         <label htmlFor="highlightIncome">Highlighted income (CAD)</label>
+        <InfoTip term="highlightIncome" />
         <input
           id="highlightIncome"
           type="number"
@@ -127,7 +135,9 @@ export function Controls({ inputs, onChange, rangeError }: ControlsProps) {
       </div>
 
       <fieldset className="control-group control-group--range">
-        <legend>Income range (CAD)</legend>
+        <legend>
+          Income range (CAD) <InfoTip term="incomeRange" />
+        </legend>
         <div className="range-inputs">
           <label htmlFor="rangeStart">
             Start

@@ -77,6 +77,84 @@ a {
   font-size: 0.9rem;
 }
 
+/* Tooltips */
+
+.infotip {
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+}
+
+.infotip__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  padding: 0;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.infotip__trigger:hover,
+.infotip__trigger[aria-expanded='true'] {
+  color: var(--bg);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/*
+ * Absolutely positioned rather than in the top layer, which means it can be
+ * clipped by an ancestor that scrolls. The only such ancestor is `.table-scroll`,
+ * where the panel opens downward over the rows and fits inside them. A table of
+ * one or two rows is the exception, and a clipped tip there is a better trade
+ * than the anchor positioning a top-layer panel would need.
+ */
+.infotip__panel {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: min(20rem, 75vw);
+  padding: 0.7rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: left;
+  white-space: normal;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 18%);
+}
+
+/* For triggers near the right edge, so the panel stays on screen. */
+.infotip__panel--end {
+  right: 0;
+  left: auto;
+}
+
+.infotip__term {
+  font-size: 0.8rem;
+}
+
+.infotip__section {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
 /* Controls */
 
 .controls {
@@ -90,11 +168,17 @@ a {
   border-radius: 6px;
 }
 
+/*
+ * Inline-block rather than block, so the tooltip trigger sits on the label's
+ * line. The select and number inputs below are 100% wide, so they still take a
+ * line of their own.
+ */
 .control-group label {
-  display: block;
+  display: inline-block;
   font-weight: 600;
   font-size: 0.85rem;
   margin-bottom: 0.3rem;
+  margin-right: 0.35rem;
 }
 
 .control-group select,
@@ -112,11 +196,25 @@ a {
   opacity: 0.5;
 }
 
-.control-group--check label {
+/* Flex row so the checkbox label and its tooltip share a line. */
+.control-group--check {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.45rem;
+}
+
+.control-group--check label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0;
   font-weight: 600;
+}
+
+.control-group--check .hint {
+  flex-basis: 100%;
+  margin-top: 0;
 }
 
 .control-group--range {

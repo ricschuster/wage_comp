@@ -88,6 +88,7 @@ export function Charts({ rows }: ChartsProps) {
         formatX={shortMoney}
         formatY={shortMoney}
         includeZero
+        tip="austriaNetCommon"
       />
 
       <LineChart
@@ -97,6 +98,7 @@ export function Charts({ rows }: ChartsProps) {
         formatX={shortMoney}
         formatY={formatPercent}
         includeZero
+        tip="effectiveRate"
       />
 
       <LineChart
@@ -106,6 +108,7 @@ export function Charts({ rows }: ChartsProps) {
         formatX={shortMoney}
         formatY={formatRatio}
         referenceLine={{ y: 1, label: 'Equivalent (1.0)' }}
+        tip="ratio"
       />
     </section>
   );

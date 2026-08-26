@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { act } from 'react';
 import { App } from './App.tsx';
-import { render, setValue } from './test-render.ts';
+import { labelText, render, setValue } from './test-render.ts';
 import { SUPPORTED_PROVINCES } from '../data/provinces/index.ts';
 import { CURRENT_TAX_YEAR, TAX_YEARS } from '../data/years.ts';
 
@@ -13,12 +14,31 @@ beforeEach(() => {
 describe('App', () => {
   it('renders the headline cards on first paint', () => {
     const { container } = render(<App />);
-    const headings = [...container.querySelectorAll('.card h3')].map(
-      (node) => node.textContent,
-    );
+    const headings = [...container.querySelectorAll('.card h3')].map(labelText);
     expect(headings).toContain('Canada net');
     expect(headings).toContain('Austria net');
     expect(headings).toContain('Ratio, Austria over Canada');
+  });
+
+  // A guard on the feature rather than on a count: the point is that the
+  // headline figures are explained on the page, not somewhere else.
+  it('explains the headline figures where they are shown', () => {
+    const { container } = render(<App />);
+    for (const selector of ['.card h3', '.equivalence h3', 'thead th']) {
+      const explained = [...container.querySelectorAll(selector)].filter((node) =>
+        node.querySelector('.infotip__trigger'),
+      );
+      expect(explained.length, `nothing explained in ${selector}`).toBeGreaterThan(0);
+    }
+  });
+
+  it('opens an explanation on the dashboard', () => {
+    const { container } = render(<App />);
+    const first = container.querySelector<HTMLButtonElement>('.infotip__trigger');
+    act(() => {
+      first?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    expect(container.querySelector('.infotip__panel')?.textContent ?? '').not.toBe('');
   });
 
   it('fills the results table from the default range', () => {

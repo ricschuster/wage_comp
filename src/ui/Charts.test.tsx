@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { act } from 'react';
 import { App } from './App.tsx';
 import { Charts } from './Charts.tsx';
-import { render } from './test-render.ts';
+import { labelText, render } from './test-render.ts';
 import { compareRange, type ComparisonParameters } from '../engine/index.ts';
 import { AUSTRIA_2026 } from '../data/austria-2026.ts';
 import { CANADA_FEDERAL_2026 } from '../data/canada-federal-2026.ts';
@@ -34,9 +34,7 @@ const ROWS = compareRange(40_000, 300_000, 20_000, P, {
 describe('Charts', () => {
   it('draws the three charts the brief asks for', () => {
     const { container } = render(<Charts rows={ROWS} />);
-    const titles = [...container.querySelectorAll('figcaption h3')].map(
-      (node) => node.textContent,
-    );
+    const titles = [...container.querySelectorAll('figcaption h3')].map(labelText);
     expect(titles).toEqual([
       'Take-home income',
       'Effective deduction rate',

@@ -1,4 +1,5 @@
 import type { ComparisonResult } from '../engine/index.ts';
+import { InfoTip } from './InfoTip.tsx';
 import { formatCad, formatEur, formatPercent, formatRatio } from './format.ts';
 
 export interface ResultsTableProps {
@@ -19,14 +20,30 @@ export function ResultsTable({ rows, highlightIncome }: ResultsTableProps) {
         <table>
           <thead>
             <tr>
-              <th scope="col">Gross (CAD)</th>
-              <th scope="col">Gross (EUR)</th>
-              <th scope="col">Canada net</th>
-              <th scope="col">Austria net</th>
-              <th scope="col">Austria net (CAD)</th>
-              <th scope="col">CA rate</th>
-              <th scope="col">AT rate</th>
-              <th scope="col">Ratio</th>
+              <th scope="col">
+                Gross (CAD) <InfoTip term="grossIncome" />
+              </th>
+              <th scope="col">
+                Gross (EUR) <InfoTip term="conversionRate" />
+              </th>
+              <th scope="col">
+                Canada net <InfoTip term="canadaNet" />
+              </th>
+              <th scope="col">
+                Austria net <InfoTip term="austriaNet" />
+              </th>
+              <th scope="col">
+                Austria net (CAD) <InfoTip term="austriaNetCommon" align="end" />
+              </th>
+              <th scope="col">
+                CA rate <InfoTip term="effectiveRate" align="end" />
+              </th>
+              <th scope="col">
+                AT rate <InfoTip term="effectiveRate" align="end" />
+              </th>
+              <th scope="col">
+                Ratio <InfoTip term="ratio" align="end" />
+              </th>
             </tr>
           </thead>
           <tbody>

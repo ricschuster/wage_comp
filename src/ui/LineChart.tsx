@@ -1,4 +1,6 @@
 import { niceTicks, project, toPoints, type LinearScale } from './chart-scale.ts';
+import { InfoTip } from './InfoTip.tsx';
+import type { GlossaryKey } from './glossary.ts';
 
 export interface Series {
   readonly label: string;
@@ -26,6 +28,13 @@ export interface LineChartProps {
   readonly referenceLine?: ReferenceLine;
   /** Forces the y axis to include zero, for charts where that matters. */
   readonly includeZero?: boolean;
+  /**
+   * Glossary term explaining what the chart plots.
+   *
+   * Kept separate from `title`, which stays a plain string because it is also
+   * the SVG's accessible name and cannot hold a component.
+   */
+  readonly tip?: GlossaryKey;
 }
 
 const WIDTH = 760;
@@ -40,6 +49,7 @@ export function LineChart({
   formatY,
   referenceLine,
   includeZero = false,
+  tip,
 }: LineChartProps) {
   const allPoints = series.flatMap((line) => line.points);
   if (allPoints.length === 0) {
@@ -75,7 +85,9 @@ export function LineChart({
   return (
     <figure className="chart">
       <figcaption>
-        <h3>{title}</h3>
+        <h3>
+          {title} {tip ? <InfoTip term={tip} /> : null}
+        </h3>
         <p className="hint">{description}</p>
       </figcaption>
 
