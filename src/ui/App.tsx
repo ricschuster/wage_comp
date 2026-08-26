@@ -10,7 +10,7 @@ import {
   type EquivalenceResult,
 } from '../engine/index.ts';
 import { AUSTRIA_2026 } from '../data/austria-2026.ts';
-import { canadaParametersFor } from '../data/canada-2026.ts';
+import { canadaParametersFor } from '../data/canada.ts';
 import { applyAssumptions, type AssumptionOverrides } from '../data/assumptions.ts';
 import { getScenario } from '../data/scenarios.ts';
 import { AssumptionsPanel } from './AssumptionsPanel.tsx';

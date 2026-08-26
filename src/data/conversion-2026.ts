@@ -11,7 +11,7 @@
  * visible rather than silent.
  */
 
-import type { Sourced } from '../engine/types.ts';
+import type { ConversionParameters } from './types.ts';
 
 /** ECB euro foreign exchange reference rates. */
 const ECB = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
@@ -25,34 +25,6 @@ const WB_GDP =
   'https://api.worldbank.org/v2/country/CAN;AUT/indicator/PA.NUS.PPP?format=json';
 
 const RETRIEVED = '2026-08-24';
-
-/** Which conversion basis to compare on. */
-export type ComparisonBasis = 'fx' | 'ppp';
-
-/**
- * Which price-level basis to use when comparing on PPP.
- *
- * `household` is the default. GDP PPP is built from the whole basket of final
- * expenditure, including government consumption and capital formation, which
- * is the wrong basket for a question about what a person can buy. See
- * `docs/decisions/2026-08-24_ppp-basis.md`.
- */
-export type PppBasis = 'household' | 'gdp';
-
-/** A pair of PPP conversion factors, in local currency per international dollar. */
-export interface PppPair {
-  readonly canada: Sourced<number>;
-  readonly austria: Sourced<number>;
-  /** The year the factors describe, which normally trails the tax year. */
-  readonly referenceYear: number;
-}
-
-export interface ConversionParameters {
-  /** Market exchange rate, Canadian dollars per euro. */
-  readonly exchangeRate: Sourced<number>;
-  readonly householdPpp: PppPair;
-  readonly gdpPpp: PppPair;
-}
 
 export const CONVERSION_2026: ConversionParameters = {
   exchangeRate: {

@@ -6,7 +6,7 @@
  * adding a file like this one, not editing `src/engine/`.
  */
 
-import type { BracketTable, Sourced } from '../engine/types.ts';
+import type { FederalParameters } from './types.ts';
 
 /** CRA, "Tax rates and income brackets to be used on the 2026 tax return". */
 const CRA_RATES =
@@ -17,28 +17,6 @@ const CRA_INDEXATION =
   'https://www.canada.ca/en/revenue-agency/services/tax/individuals/frequently-asked-questions-individuals/adjustment-personal-income-tax-benefit-amounts.html';
 
 const RETRIEVED = '2026-08-24';
-
-export interface FederalParameters {
-  readonly brackets: Sourced<BracketTable>;
-  /**
-   * The rate at which non-refundable credit amounts convert into a tax
-   * reduction. This is the lowest bracket rate, which fell from 15% to 14%
-   * with the 2025 rate cut, so it is read from the bracket table's first band
-   * rather than hardcoded separately.
-   */
-  readonly creditRate: Sourced<number>;
-  /** Basic personal amount for incomes at or above the 33% bracket threshold. */
-  readonly basicPersonalAmountBase: Sourced<number>;
-  /** Maximum enhancement added to the base amount at lower incomes. */
-  readonly basicPersonalAmountSupplement: Sourced<number>;
-  /** Income at which the enhancement starts to phase out (29% bracket start). */
-  readonly basicPersonalAmountPhaseOutStart: Sourced<number>;
-  /** Income at which the enhancement is fully phased out (33% bracket start). */
-  readonly basicPersonalAmountPhaseOutEnd: Sourced<number>;
-  readonly canadaEmploymentAmount: Sourced<number>;
-  /** Published indexation factor, kept for provenance and year-over-year checks. */
-  readonly indexationFactor: Sourced<number>;
-}
 
 export const CANADA_FEDERAL_2026: FederalParameters = {
   brackets: {

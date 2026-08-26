@@ -12,7 +12,7 @@
  * QPP2 is the one piece that is identical to the rest of the country.
  */
 
-import type { PayrollParameters } from './canada-payroll-2026.ts';
+import type { PayrollParameters } from './types.ts';
 
 /** CRA, "Payroll Deductions Formulas", 122nd edition, effective 2026-01-01. */
 const CRA_T4127 =

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { computeCanada } from './canada.ts';
 import { computePayroll, qpipPremium } from './canada-payroll.ts';
-import { canadaParametersFor, payrollFor } from '../data/canada-2026.ts';
+import { canadaParametersFor, payrollFor } from '../data/canada.ts';
 import { CANADA_PAYROLL_2026 } from '../data/canada-payroll-2026.ts';
 import { QUEBEC_PAYROLL_2026 } from '../data/quebec-payroll-2026.ts';
 import {

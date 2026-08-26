@@ -9,8 +9,8 @@
  * so both are exposed with guardrails.
  */
 
-import type { ConversionParameters } from './conversion-2026.ts';
 import { CONVERSION_2026 } from './conversion-2026.ts';
+import type { ConversionParameters } from './types.ts';
 import type { Sourced } from '../engine/types.ts';
 
 export type AssumptionKey =

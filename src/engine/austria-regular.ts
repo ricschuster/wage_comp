@@ -14,7 +14,7 @@ import type {
   AustrianParameters,
   AustrianSocialInsurance,
   UnemploymentBand,
-} from '../data/austria-2026.ts';
+} from '../data/types.ts';
 
 export interface RegularSocialInsuranceBreakdown {
   /** Monthly contribution basis after the ceiling. */

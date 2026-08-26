@@ -7,7 +7,7 @@
 
 import { taxFromBrackets } from './brackets.ts';
 import { clampToZero, roundToCents } from './money.ts';
-import type { FederalParameters } from '../data/canada-federal-2026.ts';
+import type { FederalParameters } from '../data/types.ts';
 
 export interface FederalTaxInput {
   /** Income subject to federal tax, after any deductions. */

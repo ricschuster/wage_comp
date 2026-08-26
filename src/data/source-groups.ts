@@ -3,24 +3,35 @@
  *
  * Provinces are enumerated from the lookup rather than listed by hand, so a
  * jurisdiction added later cannot quietly fail to appear in the citations. A
- * provenance commitment with a stale citation list is worth very little.
+ * provenance commitment with a stale citation list is worth very little, and
+ * the same argument applies to tax years: `sourceGroupsForYear` exists so the
+ * provenance test can walk every year, not just the one on screen.
  */
 
-import { AUSTRIA_2026 } from './austria-2026.ts';
-import { CANADA_FEDERAL_2026 } from './canada-federal-2026.ts';
-import { CANADA_PAYROLL_2026 } from './canada-payroll-2026.ts';
-import { CONVERSION_2026 } from './conversion-2026.ts';
-import { QUEBEC_PAYROLL_2026 } from './quebec-payroll-2026.ts';
-import { SUPPORTED_PROVINCES, getProvince } from './provinces/index.ts';
+import { CURRENT_TAX_YEAR, parametersForYear } from './years.ts';
+import { SUPPORTED_PROVINCES } from './provinces/index.ts';
 
-export const SOURCE_GROUPS: readonly { label: string; parameters: unknown }[] = [
-  { label: 'Canada federal', parameters: CANADA_FEDERAL_2026 },
-  { label: 'Canada payroll', parameters: CANADA_PAYROLL_2026 },
-  { label: 'Quebec payroll', parameters: QUEBEC_PAYROLL_2026 },
-  ...SUPPORTED_PROVINCES.map((code) => ({
-    label: getProvince(code).name,
-    parameters: getProvince(code) as unknown,
-  })),
-  { label: 'Austria', parameters: AUSTRIA_2026 },
-  { label: 'Conversion', parameters: CONVERSION_2026 },
-];
+export interface SourceGroup {
+  readonly label: string;
+  readonly parameters: unknown;
+}
+
+/** Parameter groups for one tax year. */
+export function sourceGroupsForYear(year: number): readonly SourceGroup[] {
+  const p = parametersForYear(year);
+  return [
+    { label: 'Canada federal', parameters: p.federal },
+    { label: 'Canada payroll', parameters: p.payroll },
+    { label: 'Quebec payroll', parameters: p.quebecPayroll },
+    ...SUPPORTED_PROVINCES.map((code) => ({
+      label: p.provinces[code].name,
+      parameters: p.provinces[code] as unknown,
+    })),
+    { label: 'Austria', parameters: p.austria },
+    { label: 'Conversion', parameters: p.conversion },
+  ];
+}
+
+/** The groups shown on the methodology page: the current tax year. */
+export const SOURCE_GROUPS: readonly SourceGroup[] =
+  sourceGroupsForYear(CURRENT_TAX_YEAR);

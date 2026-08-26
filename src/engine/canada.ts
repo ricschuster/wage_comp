@@ -23,8 +23,7 @@ import {
   type ProvincialTaxBreakdown,
 } from './canada-provincial.ts';
 import { clampToZero, roundToCents } from './money.ts';
-import type { FederalParameters } from '../data/canada-federal-2026.ts';
-import type { PayrollParameters } from '../data/canada-payroll-2026.ts';
+import type { FederalParameters, PayrollParameters } from '../data/types.ts';
 import type { ProvincialParameters } from '../data/provinces/index.ts';
 
 export interface CanadaParameters {

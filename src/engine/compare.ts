@@ -27,12 +27,12 @@ import {
   type EmployerCost,
 } from './employer.ts';
 import { roundToCents } from './money.ts';
-import type { AustrianParameters } from '../data/austria-2026.ts';
 import type {
+  AustrianParameters,
   ComparisonBasis,
   ConversionParameters,
   PppBasis,
-} from '../data/conversion-2026.ts';
+} from '../data/types.ts';
 import type { Sourced } from './types.ts';
 
 export interface ComparisonOptions {

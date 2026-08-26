@@ -49,7 +49,25 @@ Copy each `*-2026.ts` to the new year and update the values. Every value needs
 its `retrieved` date changed, not only the ones that moved: the date records
 when it was **checked**, not when it last changed.
 
-Register the year in `src/data/years.ts`. That should be the only non-data edit.
+The parameter interfaces live in `src/data/types.ts` and `src/data/provinces/types.ts`,
+so a year file declares no types of its own. Add the provincial map to
+`src/data/provinces/index.ts` and register the year in `src/data/years.ts`.
+Those two should be the only non-data edits.
+
+### Watch for mid-year changes
+
+A government can change a rate part way through a year, and then two different
+numbers are both correct:
+
+- the **annual** figure, which the tax return uses and which this model wants
+- the **prorated** figure, which payroll uses for the rest of the year to work
+  off what was withheld under the old one
+
+2025 had three of them: the federal rate cut (annual 14.5%, prorated 14% from
+July), Manitoba's indexation freeze (annual 15,780, prorated 15,591), and
+Alberta's new 8% band (annual 8%, prorated 6%). Taking the prorated figure would
+have been wrong by a visible margin in every case. The July edition of T4127
+states both, and says which is which.
 
 ### 3. Verify against the authority's own arithmetic
 
@@ -96,11 +114,29 @@ Recorded as they were found, so the next refresh does not miss them.
 | 2027 to 2030 | **British Columbia has paused bracket indexation.** Thresholds will not move; indexation resumes for 2031. |
 | After 2029 | **Austria's 55% top band expires**, reverting to 50% above one million euro. |
 
+## Backfilling an earlier year
+
+Same steps, one shortcut: the current T4127 publishes the **previous** year's
+rates, thresholds, constants, personal amounts and contribution tables in a
+second set of tables (8.22 through 8.29 in the 122nd edition). Those are the
+final annual figures, already corrected for anything that changed mid-year, so
+they are a better source than the edition published at the time. Reach for the
+earlier edition only for the things those tables do not carry: the basic
+personal amount formulas, and the factors behind the Ontario and British
+Columbia tax reductions.
+
+Revenu Québec's rates page and the Ministère des Finances parameter tables both
+carry two years side by side, so Quebec needs no second document either.
+
 ## Things to re-check rather than assume
 
-- **Nova Scotia's basic personal amount** was income-tested until 2026, when
-  the formula was removed. If it returns, it needs
-  `basicPersonalAmountPhaseOut` again.
+- **Manitoba's 2026 bracket thresholds** are published twice and do not agree.
+  T4127 gives 47,000 and 100,000, consistent with the indexation freeze
+  announced in March 2025; CRA's "tax rates and income brackets" page gives
+  47,564 and 101,200. The model follows T4127. Confirm which is right.
+- **Nova Scotia's basic personal amount** was income-tested until 2025, when
+  the announcement of 2025-02-18 set it at the maximum for the whole of that
+  year. If the test returns, it needs `basicPersonalAmountPhaseOut` again.
 - **Prince Edward Island's surtax** is currently absent from T4127 Table 8.2.
   Confirm it stays absent.
 - **The Ontario health premium bands** are not indexed and have not moved in

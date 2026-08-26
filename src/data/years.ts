@@ -1,29 +1,36 @@
 /**
  * Tax year registry.
  *
- * One year today. The registry exists anyway, for the same reason the province
- * lookup shipped with one entry: it makes adding a year a data change rather
- * than a code change, and it gives the annual refresh a single obvious place
- * to start.
+ * Two years now: 2026, and 2025 backfilled behind it. The registry makes adding
+ * a year a data change rather than a code change, and gives the annual refresh
+ * a single obvious place to start.
  *
- * If adding a year ever requires touching `src/engine/`, the parameter
- * abstraction has leaked and that is the bug to fix first. A test in
- * `years.test.ts` guards the shape.
+ * Adding 2025 needed no change to `src/engine/`, which is the property the
+ * registry exists to protect. It did move the parameter interfaces out of the
+ * 2026 files and into `types.ts`, because a second year should not have to
+ * import its shape from the first year's file.
  *
  * See `docs/ANNUAL_UPDATE.md` for the refresh procedure.
  */
 
+import { AUSTRIA_2025 } from './austria-2025.ts';
 import { AUSTRIA_2026 } from './austria-2026.ts';
+import { CANADA_FEDERAL_2025 } from './canada-federal-2025.ts';
 import { CANADA_FEDERAL_2026 } from './canada-federal-2026.ts';
+import { CANADA_PAYROLL_2025 } from './canada-payroll-2025.ts';
 import { CANADA_PAYROLL_2026 } from './canada-payroll-2026.ts';
+import { CONVERSION_2025 } from './conversion-2025.ts';
 import { CONVERSION_2026 } from './conversion-2026.ts';
+import { QUEBEC_PAYROLL_2025 } from './quebec-payroll-2025.ts';
 import { QUEBEC_PAYROLL_2026 } from './quebec-payroll-2026.ts';
-import { PROVINCES_2026 } from './provinces/index.ts';
-import type { AustrianParameters } from './austria-2026.ts';
-import type { FederalParameters } from './canada-federal-2026.ts';
-import type { PayrollParameters } from './canada-payroll-2026.ts';
-import type { ConversionParameters } from './conversion-2026.ts';
+import { PROVINCES_2025, PROVINCES_2026 } from './provinces/index.ts';
 import type { ProvinceCode, ProvincialParameters } from './provinces/index.ts';
+import type {
+  AustrianParameters,
+  ConversionParameters,
+  FederalParameters,
+  PayrollParameters,
+} from './types.ts';
 
 /** Everything the model needs for one tax year. */
 export interface TaxYearParameters {
@@ -45,6 +52,15 @@ const YEARS: Readonly<Record<number, TaxYearParameters>> = {
     provinces: PROVINCES_2026,
     austria: AUSTRIA_2026,
     conversion: CONVERSION_2026,
+  },
+  2025: {
+    year: 2025,
+    federal: CANADA_FEDERAL_2025,
+    payroll: CANADA_PAYROLL_2025,
+    quebecPayroll: QUEBEC_PAYROLL_2025,
+    provinces: PROVINCES_2025,
+    austria: AUSTRIA_2025,
+    conversion: CONVERSION_2025,
   },
 };
 
