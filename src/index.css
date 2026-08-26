@@ -132,6 +132,13 @@ a {
   line-height: 1.45;
   text-align: left;
   white-space: normal;
+  /*
+   * Reset the inherited display treatment. Card headings and table headers are
+   * uppercase and letter-spaced, which a panel of explanatory prose must not
+   * inherit: two sentences in small caps are close to unreadable.
+   */
+  text-transform: none;
+  letter-spacing: normal;
   color: var(--text);
   background: var(--bg);
   border: 1px solid var(--border);
@@ -196,12 +203,17 @@ a {
   opacity: 0.5;
 }
 
-/* Flex row so the checkbox label and its tooltip share a line. */
+/*
+ * Flex row so the checkbox label and its tooltip share a line, spanning two
+ * grid columns because the label is long enough that a single column pushed the
+ * marker onto a line of its own, where it read as stray punctuation.
+ */
 .control-group--check {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.45rem;
+  grid-column: span 2;
 }
 
 .control-group--check label {

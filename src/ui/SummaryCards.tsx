@@ -34,10 +34,15 @@ export function SummaryCards({
             Canada net <InfoTip term="canadaNet" />
           </h3>
           <p className="figure">{formatCad(result.canada.netIncome)}</p>
+          {/*
+            One tip per card, in the heading. A second on the `sub` line was
+            pushed onto a line of its own by the card's width, where a lone
+            marker reads as stray punctuation. The terms it explained are still
+            reachable from the results table and the charts.
+          */}
           <p className="sub">
             on {formatCad(result.grossIncomeCad)} gross,{' '}
-            {formatPercent(result.canadaEffectiveRate)} deducted{' '}
-            <InfoTip term="effectiveRate" />
+            {formatPercent(result.canadaEffectiveRate)} deducted
           </p>
         </article>
 
@@ -48,8 +53,7 @@ export function SummaryCards({
           <p className="figure">{formatEur(result.austria.netIncome)}</p>
           <p className="sub">
             on {formatEur(result.grossIncomeEur)} gross,{' '}
-            {formatPercent(result.austriaEffectiveRate)} deducted{' '}
-            <InfoTip term="grossIncome" />
+            {formatPercent(result.austriaEffectiveRate)} deducted
           </p>
         </article>
 
@@ -58,20 +62,22 @@ export function SummaryCards({
             Austria net, in CAD <InfoTip term="austriaNetCommon" />
           </h3>
           <p className="figure">{formatCad(result.austriaNetCommon)}</p>
-          <p className="sub">
-            converted at {result.rate.toFixed(4)} CAD per EUR{' '}
-            <InfoTip term="conversionRate" />
-          </p>
+          <p className="sub">converted at {result.rate.toFixed(4)} CAD per EUR</p>
         </article>
 
         <article
           className={`card card--ratio ${result.ratio >= 1 ? 'card--austria' : 'card--canada'}`}
         >
-          <h3>
-            Ratio, Austria over Canada <InfoTip term="ratio" align="end" />
-          </h3>
+          <h3>Ratio, Austria over Canada</h3>
           <p className="figure">{formatRatio(result.ratio)}</p>
-          <p className="sub">{describeRatio(result.ratio)}</p>
+          {/*
+            Below the figure rather than beside the heading: this heading fills
+            the card's width, and a panel opened from it covered the very number
+            the reader had just asked about.
+          */}
+          <p className="sub">
+            {describeRatio(result.ratio)} <InfoTip term="ratio" align="end" />
+          </p>
         </article>
       </section>
 
