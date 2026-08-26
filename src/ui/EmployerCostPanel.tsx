@@ -1,4 +1,5 @@
 import type { ComparisonResult } from '../engine/index.ts';
+import { InfoTip } from './InfoTip.tsx';
 import { formatCad, formatEur, formatPercent } from './format.ts';
 
 export interface EmployerCostPanelProps {
@@ -21,9 +22,12 @@ export function EmployerCostPanel({ result }: EmployerCostPanelProps) {
         </span>
       </summary>
 
+      {/* Tips live in the body, not the summary: a button inside a summary
+          element toggles the disclosure as well as itself. */}
       <p className="hint">
         What the employer pays on top of salary. This is part of why Austrian salaries
-        for equivalent roles sit lower: the same total cost buys less headline pay.
+        for equivalent roles sit lower: the same total cost buys less headline pay.{' '}
+        <InfoTip term="employerCost" />
       </p>
 
       <div className="employer-columns">
@@ -66,7 +70,8 @@ export function EmployerCostPanel({ result }: EmployerCostPanelProps) {
         Canada&apos;s employer contributions are all capped and stop rising by roughly
         $85,000 of salary. Austria&apos;s wage levies are uncapped, so they keep
         accruing on every euro. Provincial employer health taxes are not modelled: they
-        depend on an employer&apos;s total payroll rather than on one salary.
+        depend on an employer&apos;s total payroll rather than on one salary.{' '}
+        <InfoTip term="employerLoad" />
       </p>
     </details>
   );

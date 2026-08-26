@@ -40,6 +40,21 @@ export function render(node: ReactElement): Rendered {
 }
 
 /**
+ * An element's text with its tooltip triggers removed.
+ *
+ * Headings and table headers carry an `InfoTip` button, whose glyph lands in
+ * `textContent` even though it is `aria-hidden`. A test asserting on a label
+ * wants the label, not the affordance next to it.
+ */
+export function labelText(node: Element): string {
+  const copy = node.cloneNode(true) as Element;
+  for (const tip of copy.querySelectorAll('.infotip')) {
+    tip.remove();
+  }
+  return (copy.textContent ?? '').trim();
+}
+
+/**
  * Sets a form control's value the way a user would.
  *
  * React tracks the last value it wrote to a node, so assigning `value`

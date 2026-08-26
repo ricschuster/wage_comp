@@ -4,6 +4,7 @@ import {
   type ComparisonParameters,
   type ComparisonResult,
 } from '../engine/index.ts';
+import { InfoTip } from './InfoTip.tsx';
 import { formatCad } from './format.ts';
 
 export interface AuditViewProps {
@@ -37,7 +38,7 @@ export function AuditView({ result, parameters }: AuditViewProps) {
       <p className="hint">
         Every figure on this page, with the formula, the inputs, and a link to the
         source of each parameter. You should be able to reconstruct any headline number
-        by hand from this.
+        by hand from this. <InfoTip term="working" />
       </p>
       {referenceNote ? <p className="note">{referenceNote}</p> : null}
 
