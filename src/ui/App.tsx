@@ -9,10 +9,10 @@ import {
   type ComparisonResult,
   type EquivalenceResult,
 } from '../engine/index.ts';
-import { AUSTRIA_2026 } from '../data/austria-2026.ts';
 import { canadaParametersFor } from '../data/canada.ts';
 import { applyAssumptions, type AssumptionOverrides } from '../data/assumptions.ts';
 import { getScenario } from '../data/scenarios.ts';
+import { parametersForYear } from '../data/years.ts';
 import { AssumptionsPanel } from './AssumptionsPanel.tsx';
 import { AuditView } from './AuditView.tsx';
 import { Charts } from './Charts.tsx';
@@ -89,16 +89,19 @@ export function App() {
     }));
   }, []);
 
-  const parameters = useMemo<ComparisonParameters>(
-    () => ({
+  const parameters = useMemo<ComparisonParameters>(() => {
+    const year = parametersForYear(inputs.taxYear);
+    return {
       // Assembled by province, so Quebec always gets QPP and QPIP rather than
       // CPP, and nowhere else ever does.
-      canada: canadaParametersFor(inputs.province),
-      austria: AUSTRIA_2026,
-      conversion: applyAssumptions(overrides),
-    }),
-    [inputs.province, overrides],
-  );
+      canada: canadaParametersFor(inputs.province, inputs.taxYear),
+      austria: year.austria,
+      // Overrides apply on top of the chosen year's sourced factors, so
+      // switching year moves the defaults without discarding a deliberate
+      // change the reader made.
+      conversion: applyAssumptions(overrides, year.conversion),
+    };
+  }, [inputs.province, inputs.taxYear, overrides]);
 
   const options = useMemo<ComparisonOptions>(
     () => ({
@@ -168,8 +171,8 @@ export function App() {
       <header>
         <h1>Canada / Austria Wage Comparison</h1>
         <p className="lede">
-          After-tax purchasing power, not nominal salary. Tax year 2026, single
-          taxpayer, no dependants, employment income only.
+          After-tax purchasing power, not nominal salary. Tax year {inputs.taxYear},
+          single taxpayer, no dependants, employment income only.
         </p>
         <nav className="views" aria-label="Views">
           <button
@@ -194,7 +197,7 @@ export function App() {
       </header>
 
       {view === 'methodology' ? (
-        <Methodology />
+        <Methodology taxYear={inputs.taxYear} />
       ) : (
         <>
           <Controls inputs={inputs} onChange={setInputs} rangeError={range.error} />
@@ -206,6 +209,7 @@ export function App() {
             shareLink={link}
             onCopy={copy}
             copied={copied}
+            taxYear={inputs.taxYear}
           />
 
           {highlight ? (

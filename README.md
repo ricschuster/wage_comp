@@ -64,9 +64,9 @@ deductions. **All thirteen jurisdictions**, Quebec included, with its QPP,
 QPIP, federal abatement and deduction for workers modelled properly rather than
 approximated.
 
-Two tax years are in the data, **2026 and 2025**, both sourced and verified
-against the publishing authority's own bracket constants. The app currently
-shows 2026; the year selector is still to come.
+**Two tax years, 2026 and 2025**, both sourced and verified against the
+publishing authority's own bracket constants. The year is selectable on the
+dashboard and travels in the share link, and the methodology page follows it.
 
 Province choice matters more than the conversion basis does. At $300,000 the
 ratio runs from **0.906 in Nunavut to 1.048 in Nova Scotia**: Austria is behind

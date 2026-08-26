@@ -5,7 +5,7 @@ import {
   encodeShareState,
   shareUrl,
 } from './share-state.ts';
-import { ASSUMPTIONS } from '../data/assumptions.ts';
+import { ASSUMPTIONS, assumptionsForYear } from '../data/assumptions.ts';
 
 const DEFAULT_STATE = { inputs: SHARE_DEFAULTS, overrides: {} };
 
@@ -47,12 +47,35 @@ describe('encodeShareState', () => {
     });
     expect(query).toBe('');
   });
+
+  it('includes the tax year only when it is not the current one', () => {
+    expect(encodeShareState({ inputs: SHARE_DEFAULTS, overrides: {} })).toBe('');
+    expect(
+      encodeShareState({
+        inputs: { ...SHARE_DEFAULTS, taxYear: 2025 },
+        overrides: {},
+      }),
+    ).toBe('y=2025');
+  });
+
+  it('judges an override against the chosen year, not the current one', () => {
+    // 1.6074 is the sourced 2026 exchange rate. Carried into 2025, whose own
+    // default is 1.5787, it is a modification and has to survive the link.
+    const rate = assumptionsForYear(2026)[0]?.defaultValue as number;
+    const query = encodeShareState({
+      inputs: { ...SHARE_DEFAULTS, taxYear: 2025 },
+      overrides: { exchangeRate: rate },
+    });
+    expect(query).toContain(`fx=${rate}`);
+    expect(decodeShareState(query).overrides.exchangeRate).toBe(rate);
+  });
 });
 
 describe('decodeShareState', () => {
   it('round trips a fully customised state', () => {
     const state = {
       inputs: {
+        taxYear: 2025,
         province: 'BC' as const,
         basis: 'fx' as const,
         pppBasis: 'gdp' as const,
@@ -79,6 +102,18 @@ describe('decodeShareState', () => {
 
   it('accepts a supported province', () => {
     expect(decodeShareState('p=QC').inputs.province).toBe('QC');
+  });
+
+  it('accepts a supported tax year', () => {
+    expect(decodeShareState('y=2025').inputs.taxYear).toBe(2025);
+  });
+
+  it('falls back to the current year for one the registry does not know', () => {
+    // A link from a later version naming 2027 should still show a working page
+    // rather than throwing out of the registry.
+    expect(decodeShareState('y=2027').inputs.taxYear).toBe(SHARE_DEFAULTS.taxYear);
+    expect(decodeShareState('y=abc').inputs.taxYear).toBe(SHARE_DEFAULTS.taxYear);
+    expect(decodeShareState('y=').inputs.taxYear).toBe(SHARE_DEFAULTS.taxYear);
   });
 
   it('rejects an unknown province code rather than crashing', () => {
