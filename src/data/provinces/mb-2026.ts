@@ -4,6 +4,18 @@
  * Manitoba is one of only two jurisdictions whose basic personal amount is
  * income-tested. It tapers to nothing between 200,000 and 400,000, so a high
  * earner gets no personal amount at all.
+ *
+ * Note on the thresholds, which CRA publishes twice and inconsistently. The
+ * "tax rates and income brackets" page shows 47,564 and 101,200, which is
+ * 47,000 and 100,000 indexed by the 1.2% rate Manitoba used before the freeze.
+ * The budget of 2025-03-20 stopped indexing both the thresholds and the basic
+ * personal amount for 2025 and subsequent years, and CRA's two payroll
+ * publications, T4127 and T4032MB, both give the frozen 47,000 and 100,000
+ * against a basic personal amount of 15,780. The frozen figures are used here.
+ *
+ * The same discrepancy pattern as the British Columbia 5.6% typo: the rates
+ * page is the one that disagrees, and the bracket constants settle it. With
+ * 47,564 the second constant computes to 927.50 rather than the published 917.
  */
 
 import type { ProvincialParameters } from './types.ts';
@@ -12,7 +24,11 @@ import type { ProvincialParameters } from './types.ts';
 const CRA_T4127 =
   'https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jan/t4127-jan-payroll-deductions-formulas-computer-programs.html';
 
-const RETRIEVED = '2026-08-25';
+/** CRA, "Payroll Deductions Tables, Manitoba", effective 2026-01-01. */
+const CRA_T4032MB =
+  'https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4032-payroll-deductions-tables/t4032mb-jan/t4032mb-january-general-information.html';
+
+const RETRIEVED = '2026-08-26';
 
 export const MANITOBA_2026: ProvincialParameters = {
   code: 'MB',
@@ -26,7 +42,7 @@ export const MANITOBA_2026: ProvincialParameters = {
     ],
     source: CRA_T4127,
     retrieved: RETRIEVED,
-    note: 'Table 8.1, Manitoba rates (V) and thresholds (A).',
+    note: 'Table 8.1, Manitoba rates (V) and thresholds (A). Frozen since 2025 and corroborated by T4032MB. The CRA rates page disagrees; see the note at the top of this file.',
   },
 
   creditRate: {
@@ -38,9 +54,9 @@ export const MANITOBA_2026: ProvincialParameters = {
 
   basicPersonalAmount: {
     value: 15_780,
-    source: CRA_T4127,
+    source: CRA_T4032MB,
     retrieved: RETRIEVED,
-    note: 'BPAMB formula: the full amount at or below 200,000 of net income.',
+    note: 'The full amount at or below 200,000 of net income. T4032MB states it directly: the maximum BPAMB for 2026 remains 15,780.',
   },
 
   basicPersonalAmountPhaseOut: {

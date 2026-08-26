@@ -130,10 +130,14 @@ carry two years side by side, so Quebec needs no second document either.
 
 ## Things to re-check rather than assume
 
-- **Manitoba's 2026 bracket thresholds** are published twice and do not agree.
-  T4127 gives 47,000 and 100,000, consistent with the indexation freeze
-  announced in March 2025; CRA's "tax rates and income brackets" page gives
-  47,564 and 101,200. The model follows T4127. Confirm which is right.
+- **Manitoba's bracket thresholds are published twice by CRA and do not agree.**
+  T4127 and T4032MB both give 47,000 and 100,000 with a basic personal amount
+  of 15,780, matching the indexation freeze announced on 2025-03-20 and the
+  published bracket constants. The "tax rates and income brackets" page gives
+  47,564 and 101,200, which is the frozen pair indexed by 1.2% anyway. The two
+  payroll publications win, and the model uses them. Re-check each year: if
+  Manitoba resumes indexation the rates page will be right by accident, so
+  confirm against T4032MB rather than assuming the disagreement persists.
 - **Nova Scotia's basic personal amount** was income-tested until 2025, when
   the announcement of 2025-02-18 set it at the maximum for the whole of that
   year. If the test returns, it needs `basicPersonalAmountPhaseOut` again.
