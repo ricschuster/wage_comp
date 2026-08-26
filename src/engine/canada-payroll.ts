@@ -7,7 +7,7 @@
  */
 
 import { capAt, clampToZero, roundToCents } from './money.ts';
-import type { PayrollParameters } from '../data/canada-payroll-2026.ts';
+import type { PayrollParameters } from '../data/types.ts';
 
 export interface PayrollBreakdown {
   readonly cppContribution: number;

@@ -17,7 +17,7 @@ import {
   type AustriaSpecialBreakdown,
 } from './austria-special.ts';
 import { clampToZero, roundToCents } from './money.ts';
-import type { AustrianParameters } from '../data/austria-2026.ts';
+import type { AustrianParameters } from '../data/types.ts';
 
 export interface AustriaOptions {
   /**

@@ -1,4 +1,4 @@
-import type { ComparisonBasis, PppBasis } from '../data/conversion-2026.ts';
+import type { ComparisonBasis, PppBasis } from '../data/types.ts';
 import { SUPPORTED_PROVINCES, getProvince } from '../data/provinces/index.ts';
 import type { ProvinceCode } from '../data/provinces/index.ts';
 

@@ -5,7 +5,7 @@
  * inputs can be built by hand and shared as a link.
  */
 
-import type { ComparisonBasis, PppBasis } from './conversion-2026.ts';
+import type { ComparisonBasis, PppBasis } from './types.ts';
 import type { ProvinceCode } from './provinces/index.ts';
 
 export interface Scenario {

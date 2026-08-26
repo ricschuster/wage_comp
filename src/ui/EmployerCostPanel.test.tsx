@@ -5,7 +5,7 @@ import { App } from './App.tsx';
 import { EmployerCostPanel } from './EmployerCostPanel.tsx';
 import { compare, type ComparisonParameters } from '../engine/index.ts';
 import { AUSTRIA_2026 } from '../data/austria-2026.ts';
-import { canadaParametersFor } from '../data/canada-2026.ts';
+import { canadaParametersFor } from '../data/canada.ts';
 import { CONVERSION_2026 } from '../data/conversion-2026.ts';
 
 beforeEach(() => {

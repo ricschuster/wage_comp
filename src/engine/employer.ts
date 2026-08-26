@@ -14,8 +14,7 @@
 
 import { capAt, clampToZero, roundToCents } from './money.ts';
 import { cpp2Contribution, cppContribution } from './canada-payroll.ts';
-import type { PayrollParameters } from '../data/canada-payroll-2026.ts';
-import type { AustrianParameters } from '../data/austria-2026.ts';
+import type { AustrianParameters, PayrollParameters } from '../data/types.ts';
 import { splitAnnualGross } from './austria-special.ts';
 
 export interface EmployerCost {

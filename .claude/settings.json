@@ -57,6 +57,7 @@
       "Bash(head *)",
       "Bash(sed -n *)",
       "Bash(grep *)",
+      "Bash(pdftotext *)",
       "Bash(cat MEMORY.md)"
     ]
   }

@@ -44,5 +44,10 @@ export type BracketTable = readonly Bracket[];
 /** The two countries compared. */
 export type Country = 'CA' | 'AT';
 
-/** Tax year the parameters describe. */
-export type TaxYear = 2026;
+/**
+ * Tax year the parameters describe.
+ *
+ * The registry in `src/data/years.ts` is the authority on which years exist;
+ * this union is a convenience for callers that want to name one.
+ */
+export type TaxYear = 2025 | 2026;

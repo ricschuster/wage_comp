@@ -17,7 +17,7 @@
 
 import { taxFromBrackets } from './brackets.ts';
 import { capAt, clampToZero, roundToCents } from './money.ts';
-import type { AustrianParameters } from '../data/austria-2026.ts';
+import type { AustrianParameters } from '../data/types.ts';
 import { unemploymentRate } from './austria-regular.ts';
 
 /** Regular salary is 12 of 14 payments. */

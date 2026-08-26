@@ -16,7 +16,7 @@ import {
   type AssumptionKey,
   type AssumptionOverrides,
 } from '../data/assumptions.ts';
-import type { ComparisonBasis, PppBasis } from '../data/conversion-2026.ts';
+import type { ComparisonBasis, PppBasis } from '../data/types.ts';
 import { SUPPORTED_PROVINCES, type ProvinceCode } from '../data/provinces/index.ts';
 import type { DashboardInputs } from './Controls.tsx';
 

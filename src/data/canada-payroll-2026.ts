@@ -9,7 +9,7 @@
  * full. EI produces a credit. See T4127 formulas F5 and K2.
  */
 
-import type { Sourced } from '../engine/types.ts';
+import type { PayrollParameters } from './types.ts';
 
 /** CRA, "CPP contribution rates, maximums and exemptions". */
 const CRA_CPP =
@@ -28,65 +28,6 @@ const CRA_T4127 =
   'https://www.canada.ca/en/revenue-agency/services/forms-publications/payroll/t4127-payroll-deductions-formulas/t4127-jan/t4127-jan-payroll-deductions-formulas-computer-programs.html';
 
 const RETRIEVED = '2026-08-24';
-
-export interface CppParameters {
-  readonly maximumPensionableEarnings: Sourced<number>;
-  readonly basicExemption: Sourced<number>;
-  /** Total employee rate: base plus first additional. */
-  readonly rate: Sourced<number>;
-  /** Base portion, which produces a non-refundable credit. */
-  readonly baseRate: Sourced<number>;
-  /** First additional portion, which is deducted from income. */
-  readonly firstAdditionalRate: Sourced<number>;
-  readonly maximumContribution: Sourced<number>;
-}
-
-export interface Cpp2Parameters {
-  /** Year's additional maximum pensionable earnings. */
-  readonly additionalMaximumPensionableEarnings: Sourced<number>;
-  readonly rate: Sourced<number>;
-  readonly maximumContribution: Sourced<number>;
-}
-
-export interface EiParameters {
-  readonly maximumInsurableEarnings: Sourced<number>;
-  readonly rate: Sourced<number>;
-  readonly maximumPremium: Sourced<number>;
-}
-
-/**
- * Quebec parental insurance plan. No equivalent exists elsewhere in Canada,
- * so this is absent outside Quebec.
- */
-export interface QpipParameters {
-  readonly maximumInsurableEarnings: Sourced<number>;
-  readonly rate: Sourced<number>;
-  readonly maximumPremium: Sourced<number>;
-}
-
-/**
- * Employer-side rates.
- *
- * CPP, QPP and CPP2 are matched by the employer exactly, so only the rates
- * that differ are listed here. EI is the notable one: employers pay 1.4 times
- * the employee rate.
- */
-export interface EmployerParameters {
-  readonly eiRate: Sourced<number>;
-  readonly eiMaximumPremium: Sourced<number>;
-  readonly qpipRate?: Sourced<number>;
-  readonly qpipMaximumPremium?: Sourced<number>;
-}
-
-export interface PayrollParameters {
-  /** CPP outside Quebec, QPP inside it. Same shape, different rates. */
-  readonly cpp: CppParameters;
-  readonly cpp2: Cpp2Parameters;
-  readonly ei: EiParameters;
-  /** Quebec only. */
-  readonly qpip?: QpipParameters;
-  readonly employer: EmployerParameters;
-}
 
 export const CANADA_PAYROLL_2026: PayrollParameters = {
   cpp: {
