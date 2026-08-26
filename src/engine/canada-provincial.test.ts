@@ -8,6 +8,7 @@ import {
   taxReductionAmount,
 } from './canada-provincial.ts';
 import {
+  PROVINCES_2025,
   SUPPORTED_PROVINCES,
   getProvince,
   type ProvinceCode,
@@ -15,6 +16,7 @@ import {
 
 const AB = getProvince('AB');
 const BC = getProvince('BC');
+const MB = getProvince('MB');
 const ON = getProvince('ON');
 
 describe('province lookup', () => {
@@ -148,6 +150,33 @@ describe('2026 British Columbia parameters', () => {
   it('has no surtax or health premium', () => {
     expect(BC.surtax).toBeUndefined();
     expect(BC.healthPremium).toBeUndefined();
+  });
+});
+
+describe('2026 Manitoba parameters', () => {
+  // CRA publishes Manitoba's 2026 thresholds twice and inconsistently. The
+  // "tax rates and income brackets" page shows 47,564 and 101,200, which is the
+  // frozen figures indexed by the 1.2% rate Manitoba used before the budget of
+  // 2025-03-20 stopped indexing them. T4127 and T4032MB both give 47,000 and
+  // 100,000, and the published bracket constants agree with those.
+  it('keeps the frozen thresholds, not the indexed ones on the CRA rates page', () => {
+    expect(MB.brackets.value.map((band) => band.from)).toEqual([0, 47_000, 100_000]);
+    expect(MB.basicPersonalAmount.value).toBe(15_780);
+  });
+
+  it('would not reproduce the published constant KP if 47,564 were used', () => {
+    // KP for the second band is rate difference times threshold. T4127 publishes
+    // 917, which only 47,000 produces.
+    const spread = 0.1275 - 0.108;
+    expect(Math.round(47_000 * spread)).toBe(917);
+    expect(Math.round(47_564 * spread)).not.toBe(917);
+  });
+
+  it('is unchanged from 2025, which is what a freeze means', () => {
+    expect(MB.brackets.value).toEqual(PROVINCES_2025.MB.brackets.value);
+    expect(MB.basicPersonalAmount.value).toBe(
+      PROVINCES_2025.MB.basicPersonalAmount.value,
+    );
   });
 });
 
