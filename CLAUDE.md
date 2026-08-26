@@ -222,6 +222,27 @@ Run shell commands as single, atomic invocations so they match the allowlist in
    hand-rolled polling loop.
 4. Prefer many small allowlisted commands over one bundled script.
 
+## UI verification
+
+Look at any UI change before opening the PR. A green test suite says nothing
+about whether the screen reads correctly: on 2026-08-26 three layout faults
+shipped with 468 tests passing, and the worst of them rendered every tooltip in
+uppercase, which made the explanations harder to read than no explanations.
+
+This is the same rule as hand-checking a result after a parameter change. Tests
+and code share assumptions, and neither can see a stylesheet.
+
+1. `tools/screenshot.sh` regenerates the README image from a production build.
+   Run it when the dashboard's appearance changes.
+2. To check a specific view or an open control, point `tools/screenshot.mjs` at a
+   running dev server instead. It takes a URL, an output path and a Chromium
+   path. Install one with `npx playwright install chromium` if none is cached.
+3. No browser extension and no account permission is involved, so this works on
+   every machine and in CI. Do not reach for browser automation tooling instead.
+4. Inherited CSS is the trap worth checking first. A panel or overlay placed
+   inside a heading, a table header or a legend picks up its `text-transform`,
+   `letter-spacing` and `font-weight`.
+
 ## Claude Code operating mode
 
 Act as an autonomous coding agent, but keep the owner in control of design
